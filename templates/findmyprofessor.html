@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="sl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>FindMyProfessor</title>
+    <script src="/static/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+    <script src="static/app_logic.js"></script>
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <div class="container" id="content">
+      <h1>FindMyProfessor</h1>
+      <form action="/preset" method="post">
+        {% if status==1 %}
+          <button type="submit" class="btn btn-outline-light btn-lg btn-block btn-success" name="preset" value="1">Tabla1</button>
+        {% else %}
+          <button type="submit" class="btn btn-outline-light btn-lg btn-block btn-secondary" name="preset" value="1">Tabla1</button>
+        {% endif %}
+      </form>
+
+      <form action="/preset" method="post">
+        {% if status==2 %}
+            <button type="submit" class="btn btn-outline-light btn-lg btn-block btn-success" name="preset" value="2">Tabla2</button>
+        {% else %}
+            <button type="submit" class="btn btn-outline-light btn-lg btn-block btn-secondary" name="preset" value="2">Tabla2</button>
+        {% endif %}
+      </form>
+
+      <form action="/preset" method="post">
+        {% if status==3 %}
+            <button type="submit" class="btn btn-outline-light btn-lg btn-block btn-success" name="preset" value="3">Kateder</button>
+        {% else %}
+            <button type="submit" class="btn btn-outline-light btn-lg btn-block btn-secondary" name="preset" value="3">Kateder</button>
+        {% endif %}
+      </form>
+
+      <form action="/auto" method="post">
+        {% if status==4 %}
+            <button type="submit" class="btn btn-outline-light btn-lg btn-block btn-success" name="preset" value="4">Avtonomno sledenje</button>
+        {% else %}
+            <button type="submit" class="btn btn-outline-light btn-lg btn-block btn-secondary" name="preset" value="4">Avtonomno sledenje</button>
+        {% endif %}
+      </form>
+      <p>Prikaz predvidene pozicije profesorja:</p> </br>
+      <div id="log"> </div>
+      <canvas id="myCanvas" width="640" height="480" style="border:1px solid #d3d3d3;">
+      Your browser does not support the HTML5 canvas tag.</canvas>
+
+      <footer class="mt-5">
+          <div class="row">
+            <div class="col-12">
+              <small>&copy; Mark Breznik</small>
+              <p>Dobrodošli pri rešitvi za sledenje profesorja v predavalnica. Naloga je bila razvita za diplomsko nalogo pod okriljem mentorjev izr. prof. dr. Matevž Pogačnik in as. Klemen Pečnik. Za implementacijo se obrnite na MMC - LMMFE.</p>
+            </div>
+          </div>
+        </footer>
+    </div>
+    <script src="/static/popper.min.js"></script>
+    <script src="/static/bootstrap.min.js"></script>
+  </body>
+</html>

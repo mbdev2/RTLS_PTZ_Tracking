@@ -1,0 +1,17 @@
+h1 {
+  color: #FFFFFF;
+  font: 32px Arial, sans-serif;
+}
+
+body {
+  padding: 40px;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.btn {
+    margin: 0px 5px 30px;
+  	font-weight: bold;
+}
