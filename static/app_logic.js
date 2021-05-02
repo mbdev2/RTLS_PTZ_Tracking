@@ -4,18 +4,18 @@ $(document).ready(function(){
     console.log(socket);
     //receive details from server
     socket.on('koordinate', function(msg) {
-        console.log(msg);
+        console.log(msg.frame);
 
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
-        var imgData = ctx.createImageData(640, 480);
+        var imgData = ctx.createImageData(32, 24);
 
         var i;
         var vrednostCelice;
         var barva = [0,0,0,255];
 
         for (i = 0; i < imgData.data.length; i += 4) {
-            vrednostCelice=msg.number[i/128][i/4]
+            vrednostCelice=msg.frame[i/4]
             if (vrednostCelice < 19){
                 barva = [40,34,87,255];
                 }
@@ -55,9 +55,9 @@ $(document).ready(function(){
             imgData.data[i+3] = barva[3];
         }
 
-        console.log(c)
+        console.log(c);
         ctx.putImageData(imgData, 0, 0);
-        number_string = '<h3>Koordinata X: </h3>'+'<p>' + msg.number[0].toString() + '</p>'+ '</br>' +'<h3>Koordinata Y: </h3>'+ '<p>' + msg.number[1].toString() + '</p>';
-        $('#log').html(number_string);
+        //number_string = '<h3>Koordinata X: </h3>'+'<p>' + msg.number[0].toString() + '</p>'+ '</br>' +'<h3>Koordinata Y: </h3>'+ '<p>' + msg.number[1].toString() + '</p>';
+        //$('#log').html(number_string);
     });
 });

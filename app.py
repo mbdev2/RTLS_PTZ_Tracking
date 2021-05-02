@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, request
+import numpy
 import asyncio
 from flask_socketio import SocketIO, emit
 import logging
@@ -44,12 +45,10 @@ def rtlsRun():
             mlx.getFrame(frame)
         except ValueError:
             continue # these happen, no biggie - retry
-        print(frame)
-        frame = scipy.ndimage.zoom(frame, 20, order=1)
-        print(frame)
-        break
+        #frame = scipy.ndimage.zoom(numpy.array(frame).reshape(32,24), 20, order=1).flatten()
+        #print(frame.shape)
         if avtonomijaONOFF:
-            socketio.emit('koordinate', {'number': number}, namespace='/rtls')
+            socketio.emit('koordinate', {'frame': frame}, namespace='/rtls')
         sleep(1)
 
 @app.route("/") # route za osnovno stran

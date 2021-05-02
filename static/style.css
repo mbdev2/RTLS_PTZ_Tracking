@@ -15,3 +15,5 @@ a {
     margin: 0px 5px 30px;
   	font-weight: bold;
 }
+
+#canvas-container { width: 100%; text-align:center; margin: auto; }
