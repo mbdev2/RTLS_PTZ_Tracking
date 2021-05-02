@@ -4,11 +4,15 @@ from flask_socketio import SocketIO, emit
 import logging
 import threading
 import time
+import board
+import busio
+import adafruit_mlx90640
 import requests
 import random
 from time import sleep
 from threading import Thread, Event
 import functools
+import scipy.ndimage
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -17,21 +21,33 @@ app.config['DEBUG'] = True
 #globalna spremenljivka za upravljanje avtonomnega threada
 avtonomijaONOFF = False
 
-socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True) #spremenimo flask app v socketio app
+#inicializaicja termalne kamere MLX90640 na I2C vmesniku
+i2c = busio.I2C(board.SCL, board.SDA, frequency=800000)
+mlx = adafruit_mlx90640.MLX90640(i2c)
+mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
+
+#spremenimo flask app v socketio app
+socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
 
 #omogocimo uporabo threada z knjizico
 thread = None
 thread_stop_event = Event()
 
 def rtlsRun():
-    #infinite loop of magical random numbers
     global avtonomijaONOFF
+    global mlx
+
     while not thread_stop_event.isSet():
-        cordX = random.randint(0,31)
-        cordY = random.randint(0,23)
-        number=[cordX, cordY] #tale array posljemo preko sock emit na spletno stran
-        print("Testiranje", number)
-        print("Stanje", avtonomijaONOFF)
+        frame = [0] * 768 #array za naso termalno sliko
+        #error-catching nacin zavzetja slike
+        try:
+            mlx.getFrame(frame)
+        except ValueError:
+            continue # these happen, no biggie - retry
+        print(frame)
+        frame = scipy.ndimage.zoom(frame, 20, order=1)
+        print(frame)
+        break
         if avtonomijaONOFF:
             socketio.emit('koordinate', {'number': number}, namespace='/rtls')
         sleep(1)

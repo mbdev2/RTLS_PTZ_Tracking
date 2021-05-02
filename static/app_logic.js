@@ -4,30 +4,55 @@ $(document).ready(function(){
     console.log(socket);
     //receive details from server
     socket.on('koordinate', function(msg) {
-      console.log(msg);
-        console.log("Received number" + msg.number[0]);
-        console.log("Received number" + msg.number[1]);
+        console.log(msg);
 
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
         var imgData = ctx.createImageData(640, 480);
-        var cordX=msg.number[0]
-        var cordY=msg.number[1]
+
         var i;
+        var vrednostCelice;
+        var barva = [0,0,0,255];
+
         for (i = 0; i < imgData.data.length; i += 4) {
-            imgData.data[i+0] = 255;
-            imgData.data[i+1] = 255;
-            imgData.data[i+2] = 255;
-            imgData.data[i+3] = 255;
-        }
-        var j;
-        for (i = 0; i < 20; i += 1) {
-          for (j = 0; j < 20; j += 1) {
-            imgData.data[(cordY*20+i)*20*32*4+cordX*20*4+j*4] = 0;
-            imgData.data[(cordY*20+i)*20*32*4+cordX*20*4+j*4+1] = 0;
-            imgData.data[(cordY*20+i)*20*32*4+cordX*20*4+j*4+2] = 0;
-            imgData.data[(cordY*20+i)*20*32*4+cordX*20*4+j*4+3] = 255;
-          }
+            vrednostCelice=msg.number[i/128][i/4]
+            if (vrednostCelice < 19){
+                barva = [40,34,87,255];
+                }
+            else if (vrednostCelice < 21){
+                barva = [7,5,243,255];
+                }
+            else if (vrednostCelice < 23){
+                barva = [59,135,118,255];
+                }
+            else if (vrednostCelice < 25){
+                barva = [145,252,77,255];
+                }
+            else if (vrednostCelice < 27){
+                barva = [212,253,81,255];
+                }
+            else if (vrednostCelice < 29){
+                barva = [253,241,80,255];
+                }
+            else if (vrednostCelice < 31){
+                barva = [247,204,70,255];
+                }
+            else if (vrednostCelice < 33){
+                barva = [236,96,47,255];
+                }
+            else if (vrednostCelice < 35){
+                barva = [236,53,36,255];
+                }
+            else if (vrednostCelice < 37){
+                barva = [235,74,94,255];
+                }
+            else if (vrednostCelice < 39){
+                barva = [237,112,173,255];
+                }
+            imgData.data[i+0] = barva[0];
+            imgData.data[i+1] = barva[1];
+            imgData.data[i+2] = barva[2];
+            imgData.data[i+3] = barva[3];
         }
 
         console.log(c)
