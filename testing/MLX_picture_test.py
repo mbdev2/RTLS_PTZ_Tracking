@@ -16,7 +16,7 @@ import busio
 
 import adafruit_mlx90640
 
-INTERPOLATE = 2
+INTERPOLATE = 10
 
 # MUST set I2C freq to 1MHz in /boot/config.txt
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -51,3 +51,4 @@ img = Image.new("L", (32, 24))
 img.putdata(pixels)
 img = img.resize((32 * INTERPOLATE, 24 * INTERPOLATE), Image.BICUBIC)
 img.save(r'termalnaslika.png')
+print("Complete")

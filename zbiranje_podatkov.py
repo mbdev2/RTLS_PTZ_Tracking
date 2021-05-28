@@ -33,7 +33,6 @@ try:
 except ValueError:
     # these happen, no biggie - retry
     print("Error with capture")
-    continue
 
 # prepare data frame to send to edgeimpulse
 data = {
