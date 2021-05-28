@@ -22,7 +22,7 @@ INTERPOLATE = 10
 i2c = busio.I2C(board.SCL, board.SDA)
 
 # low range of the sensor (this will be black on the screen)
-MINTEMP = 15.0
+MINTEMP = 18.0
 # high range of the sensor (this will be white on the screen)
 MAXTEMP = 40.0
 
@@ -34,21 +34,24 @@ print(mlx.refresh_rate)
 print("Refresh rate: ", pow(2, (mlx.refresh_rate - 1)), "Hz")
 
 frame = [0] * 768
-try:
-    mlx.getFrame(frame)
-except ValueError:
-    print("Happens")
-    #continue  # these happen, no biggie - retry
+for samplesNum in range(0,600):
+    try:
+        mlx.getFrame(frame)
+    except ValueError:
+        print("Happens")
+        continue  # these happen, no biggie - retry
 
-pixels = [0] * 768
-for i, pixel in enumerate(frame):
-    if pixel < MINTEMP:
-        pixels[i]=15
-    pixels[i] = int((pixel-MINTEMP)*(255/(MAXTEMP-MINTEMP)))
+    pixels = [0] * 768
+    for i, pixel in enumerate(frame):
+        if pixel < MINTEMP:
+            pixels[i]=MINTEMP
+        pixels[i] = int((pixel-MINTEMP)*(255/(MAXTEMP-MINTEMP)))
 
-# pixelrgb = [colors[constrain(int(pixel), 0, COLORDEPTH-1)] for pixel in pixels]
-img = Image.new("L", (32, 24))
-img.putdata(pixels)
-img = img.resize((32 * INTERPOLATE, 24 * INTERPOLATE), Image.BICUBIC)
-img.save(r'termalnaslika.png')
-print("Complete")
+    # pixelrgb = [colors[constrain(int(pixel), 0, COLORDEPTH-1)] for pixel in pixels]
+    if samplesNum%2==0:
+        img = Image.new("L", (32, 24))
+        img.putdata(pixels)
+        img = img.resize((32 * INTERPOLATE, 24 * INTERPOLATE), Image.BICUBIC)
+        name="sample"+samplesNum/2
+        img.save(str(samplesNum/2))
+        print("Saved sample ", samplesNum)
