@@ -22,9 +22,9 @@ INTERPOLATE = 10
 i2c = busio.I2C(board.SCL, board.SDA)
 
 # low range of the sensor (this will be black on the screen)
-MINTEMP = 18.0
+MINTEMP =20.0
 # high range of the sensor (this will be white on the screen)
-MAXTEMP = 40.0
+MAXTEMP = 36.0
 
 # initialize the sensor
 mlx = adafruit_mlx90640.MLX90640(i2c)
@@ -34,7 +34,7 @@ print(mlx.refresh_rate)
 print("Refresh rate: ", pow(2, (mlx.refresh_rate - 1)), "Hz")
 
 frame = [0] * 768
-for samplesNum in range(0,600):
+for samplesNum in range(168,600):
     try:
         mlx.getFrame(frame)
     except ValueError:
@@ -52,6 +52,6 @@ for samplesNum in range(0,600):
         img = Image.new("L", (32, 24))
         img.putdata(pixels)
         img = img.resize((32 * INTERPOLATE, 24 * INTERPOLATE), Image.BICUBIC)
-        name="sample"+samplesNum/2
-        img.save(str(samplesNum/2))
+        name="2sample "+str(samplesNum/2)+".png"
+        img.save(name)
         print("Saved sample ", samplesNum)
