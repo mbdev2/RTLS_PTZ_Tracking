@@ -11,9 +11,10 @@ from edge_impulse_linux.image import ImageImpulseRunner
 import board
 import busio
 import adafruit_mlx90640
+import traceback
+
 
 runner = None
-show_camera = True
 INTERPOLATE = 10
 # MUST set I2C freq to 1MHz in /boot/config.txt
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -25,7 +26,7 @@ MAXTEMP = 36.0
 def help():
     print('python classify.py <path_to_model.eim>')
 
-def main(argv):
+def main():
     for poskusi in range (0,600):
         model = "python idk.py /home/pi/RTLS_FindMyProfessor/modelfile.eim"
 
@@ -52,8 +53,10 @@ def main(argv):
                     try:
                         mlx.getFrame(frame)
                         break
-                    except ValueError:
-                        print("Happens")
+                    except Exception:
+                        print(traceback.format_exc())
+                        mlx = adafruit_mlx90640.MLX90640(i2c)
+                        mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
                         continue  # these happen, no biggie - retry
 
                 pixels = [0] * 768
@@ -117,10 +120,6 @@ def main(argv):
                         print('%s: %.2f\t' % (label, score), end='')
                     print('', flush=True)
 
-                    if (show_camera):
-                        cv2.imshow('edgeimpulse', img)
-                        if cv2.waitKey(1) == ord('q'):
-                            return
 
                 elif "bounding_boxes" in res["result"].keys():
                     print('Found %d bounding boxes (%d ms.)' % (len(res["result"]["bounding_boxes"]), res['timing']['dsp'] + res['timing']['classification']))
@@ -131,4 +130,4 @@ def main(argv):
                     runner.stop()
 
 if __name__ == "__main__":
-   main(sys.argv[1:])
+   main()
