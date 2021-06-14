@@ -26,22 +26,9 @@ def help():
     print('python classify.py <path_to_model.eim>')
 
 def main(argv):
-    try:
-        opts, args = getopt.getopt(argv, "h", ["--help"])
-    except getopt.GetoptError:
-        help()
-        sys.exit(2)
 
-    for opt, arg in opts:
-        if opt in ('-h', '--help'):
-            help()
-            sys.exit()
 
-    if len(args) == 0:
-        help()
-        sys.exit(2)
-
-    model = args[0]
+    model = "python idk.py /home/pi/RTLS_FindMyProfessor/modelfile.eim"
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
     modelfile = os.path.join(dir_path, model)
@@ -55,18 +42,20 @@ def main(argv):
 
     print('MODEL: ' + modelfile)
 
-    with ImageImpulseRunner(modelfile) as runner:
+    with ImageImpulseRunner("/home/pi/RTLS_FindMyProfessor/modelfile.eim") as runner:
         try:
             model_info = runner.init()
             print('Loaded runner for "' + model_info['project']['owner'] + ' / ' + model_info['project']['name'] + '"')
             labels = model_info['model_parameters']['labels']
 
             frame = [0] * 768
-            try:
-                mlx.getFrame(frame)
-            except ValueError:
-                print("Happens")
-                continue  # these happen, no biggie - retry
+            while True:
+                try:
+                    mlx.getFrame(frame)
+                    break
+                except ValueError:
+                    print("Happens")
+                    continue  # these happen, no biggie - retry
 
             pixels = [0] * 768
             for i, pixel in enumerate(frame):
@@ -75,9 +64,11 @@ def main(argv):
                 pixels[i] = int((pixel-MINTEMP)*(255/(MAXTEMP-MINTEMP)))
 
             # pixelrgb = [colors[constrain(int(pixel), 0, COLORDEPTH-1)] for pixel in pixels]
-            img = Image.new("L", (32, 24))
-            img.putdata(pixels)
-            img = img.resize((32 * INTERPOLATE, 24 * INTERPOLATE), Image.BICUBIC)
+            img2 = Image.new("L", (32, 24))
+            img2.putdata(pixels)
+            img2 = img2.resize((32 * INTERPOLATE, 24 * INTERPOLATE), Image.BICUBIC)
+            img= np.array(img2)
+            print(img)
             #img = cv2.imread('/Users/janjongboom/Desktop/jan.jpg')
 
             features = []
