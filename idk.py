@@ -108,11 +108,9 @@ def main(argv):
 
                 pixels = np.array(cropped).flatten().tolist()
 
-                for ix in range(0, len(pixels), 3):
-                    b = pixels[ix + 0]
-                    g = pixels[ix + 1]
-                    r = pixels[ix + 2]
-                    features.append((r << 16) + (g << 8) + b)
+                for ix in range(0, len(pixels)):
+                    b = pixels[ix]
+                    features.append((b << 16) + (b << 8) + b)
 
             res = runner.classify(features)
 
