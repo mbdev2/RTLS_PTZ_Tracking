@@ -1,18 +1,15 @@
 # First, install the dependencies via:
 #    $ pip3 install requests
+
 import json
-import hmac, hashlib
+import time, hmac, hashlib
 import requests
 import re, uuid
 import math
-import time
-import board
-import busio
-import adafruit_mlx90640
 
 # Your API & HMAC keys can be found here (go to your project > Dashboard > Keys to find this)
-HMAC_KEY = "9bc3f782ca25e17946d75ba7b9eb4b5f"
-API_KEY = "ei_2901170da9b73b4ee13f73211ee8413873c27e869792408f5d240de15d17c3f3"
+HMAC_KEY = "fed53116f20684c067774ebf9e7bcbdc"
+API_KEY = "ei_fd83..."
 
 # empty signature (all zeros). HS256 gives 32 byte signature, and we encode in hex, so we need 64 characters here
 emptySignature = ''.join(['0'] * 64)
@@ -20,21 +17,20 @@ emptySignature = ''.join(['0'] * 64)
 # use MAC address of network interface as deviceId
 device_name =":".join(re.findall('..', '%012x' % uuid.getnode()))
 
-# image array capture using the MLX90640 and adafruit_mlx90640 drivers
-i2c = busio.I2C(board.SCL, board.SDA, frequency=800000)
-mlx = adafruit_mlx90640.MLX90640(i2c)
-print("MLX addr detected on I2C")
-print([hex(i) for i in mlx.serial_number])
-mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
+# here we have new data every 16 ms
+INTERVAL_MS = 16
 
-frame = [0] * 768
-try:
-    mlx.getFrame(frame)
-except ValueError:
-    # these happen, no biggie - retry
-    print("Error with capture")
+if INTERVAL_MS <= 0:
+    raise Exception("Interval in miliseconds cannot be equal or lower than 0.")
 
-# prepare data frame to send to edgeimpulse
+# here we'll collect 2 seconds of data at a frequency defined by interval_ms
+freq =1000/INTERVAL_MS
+values_list=[]
+for i in range (2*int(round(freq,0))):
+    values_list.append([math.sin(i * 0.1) * 10,
+                math.cos(i * 0.1) * 10,
+                (math.sin(i * 0.1) + math.cos(i * 0.1)) * 10])
+
 data = {
     "protected": {
         "ver": "v1",
@@ -44,14 +40,18 @@ data = {
     "signature": emptySignature,
     "payload": {
         "device_name":  device_name,
-        "device_type": "MLX_TEST",
-        "interval_ms": 500,
+        "device_type": "LINUX_TEST",
+        "interval_ms": INTERVAL_MS,
         "sensors": [
-            { "name": "Temparature", "units": "celsius" }
+            { "name": "accX", "units": "m/s2" },
+            { "name": "accY", "units": "m/s2" },
+            { "name": "accZ", "units": "m/s2" }
         ],
-        "values": frame # our temperature data
+        "values": values_list
     }
 }
+
+
 
 # encode in JSON
 encoded = json.dumps(data)
