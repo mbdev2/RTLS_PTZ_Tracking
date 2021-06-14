@@ -45,7 +45,6 @@ data = {
     "payload": {
         "device_name":  device_name,
         "device_type": "MLX_TEST",
-        "interval_ms": 500,
         "sensors": [
             { "name": "Temparature", "units": "celsius" }
         ],
