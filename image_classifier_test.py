@@ -27,25 +27,23 @@ def help():
     print('python classify.py <path_to_model.eim>')
 
 def main():
-    for poskusi in range (0,600):
-        model = "python idk.py /home/pi/RTLS_FindMyProfessor/modelfile.eim"
+    model = "python idk.py /home/pi/RTLS_FindMyProfessor/modelfile.eim"
 
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        modelfile = os.path.join(dir_path, model)
-
-        # initialize the sensor
-        mlx = adafruit_mlx90640.MLX90640(i2c)
-        print("MLX addr detected on I2C, Serial #", [hex(i) for i in mlx.serial_number])
-        mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
-        print(mlx.refresh_rate)
-        print("Refresh rate: ", pow(2, (mlx.refresh_rate - 1)), "Hz")
-
-        print('MODEL: ' + modelfile)
-
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    modelfile = os.path.join(dir_path, model)
+        
+    mlx = adafruit_mlx90640.MLX90640(i2c)
+    print("MLX addr detected on I2C, Serial #", [hex(i) for i in mlx.serial_number])
+    mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
+    print(mlx.refresh_rate)
+    print("Refresh rate: ", pow(2, (mlx.refresh_rate - 1)), "Hz")
+    print('MODEL: ' + modelfile)
+    
+    for poskusi in range (0,2000):
         with ImageImpulseRunner("/home/pi/RTLS_FindMyProfessor/modelfile.eim") as runner:
             try:
                 model_info = runner.init()
-                print('Loaded runner for "' + model_info['project']['owner'] + ' / ' + model_info['project']['name'] + '"')
+                #print('Loaded runner for "' + model_info['project']['owner'] + ' / ' + model_info['project']['name'] + '"')
                 labels = model_info['model_parameters']['labels']
 
                 frame = [0] * 768
@@ -70,7 +68,7 @@ def main():
                 img2.putdata(pixels)
                 img2 = img2.resize((32 * INTERPOLATE, 24 * INTERPOLATE), Image.BICUBIC)
                 img= np.array(img2)
-                print(img)
+                #print(img)
                 #img = cv2.imread('/Users/janjongboom/Desktop/jan.jpg')
 
                 features = []
