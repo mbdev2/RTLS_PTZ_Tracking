@@ -31,7 +31,7 @@ def main():
     print(mlx.refresh_rate)
     print("Refresh rate: ", pow(2, (mlx.refresh_rate - 1)), "Hz")
 
-    for poskusi in range (0,600):
+    for poskusi in range (400,480):
         # capture thermal frame
         frame = [0] * 768
         while True:
