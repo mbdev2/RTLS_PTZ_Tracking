@@ -28,11 +28,11 @@ $(document).ready(function(){
         }
         var j;
         for (i = 0; i < 20; i += 1) {
-         for (j = cordX-9; j < 20+cordX; j += 1) {
-           imgData.data[(cordY+i)*2*4*32+j*4] = 0;
-           imgData.data[(cordY+i)*2*4*32+j*4+1] = 0;
-           imgData.data[(cordY+i)*2*4*32+j*4+2] = 0;
-           imgData.data[(cordY+i)*2*4*32+j*4+3] = 255;
+         for (j = cordY-10; j < cordY+10; j += 1) {
+           imgData.data[(cordX+i)*2*4*320+j*4] = 0;
+           imgData.data[(cordX+i)*2*4*320+j*4+1] = 0;
+           imgData.data[(cordX+i)*2*4*320+j*4+2] = 0;
+           imgData.data[(cordX+i)*2*4*320+j*4+3] = 255;
          }
         }
 

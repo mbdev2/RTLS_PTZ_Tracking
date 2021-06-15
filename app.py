@@ -116,14 +116,13 @@ def rtlsRun():
                         koordinate=[bb['value'], bb['x'], bb['y'], bb['width'], bb['height']]
                         imamoBB=True
                         break
-                koordinate=[0.65,243,12,77,65]
-                imamoBB=True
+
                 if avtonomijaONOFF and imamoBB:
                     socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
             finally:
                 if (runner):
                     runner.stop()
-            sleep(0)
+            sleep(1)
 
 @app.route("/") # route za osnovno stran
 def home():
