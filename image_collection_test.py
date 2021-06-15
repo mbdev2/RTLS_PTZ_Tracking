@@ -18,7 +18,7 @@ i2c = busio.I2C(board.SCL, board.SDA)
 # low range of the sensor (this will be black on the screen)
 MINTEMP =22.0
 # high range of the sensor (this will be white on the screen)
-MAXTEMP = 36.0
+MAXTEMP = 38.0
 
 def help():
  print('python image_collection_test.py')
