@@ -28,7 +28,7 @@ def help():
     print('python classify.py <path_to_model.eim>')
 
 def main():
-    model = "python idk.py /home/pi/RTLS_FindMyProfessor/modelfile.eim"
+    model = "/home/pi/RTLS_FindMyProfessor/modelfile.eim"
     dir_path = os.path.dirname(os.path.realpath(__file__))
     modelfile = os.path.join(dir_path, model)
     print('MODEL: ' + modelfile)
@@ -48,8 +48,8 @@ def main():
                 labels = model_info['model_parameters']['labels']
 
                  # capture thermal frame
-                 frame = [0] * 768
-                 while True:
+                frame = [0] * 768
+                while True:
                      try:
                          mlx.getFrame(frame)
                          break
