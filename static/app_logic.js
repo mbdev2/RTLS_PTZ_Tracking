@@ -29,10 +29,10 @@ $(document).ready(function(){
         var j;
         for (i = 0; i < 20; i += 1) {
          for (j = cordX-9; j < 20+cordX; j += 1) {
-           imgData.data[cordY*2+j] = 0;
-           imgData.data[cordY*2+j] = 0;
-           imgData.data[cordY*2+j] = 0;
-           imgData.data[cordY*2+j] = 255;
+           imgData.data[(cordY+i)*2*4*32+j*4] = 0;
+           imgData.data[(cordY+i)*2*4*32+j*4+1] = 0;
+           imgData.data[(cordY+i)*2*4*32+j*4+2] = 0;
+           imgData.data[(cordY+i)*2*4*32+j*4+3] = 255;
          }
         }
 
