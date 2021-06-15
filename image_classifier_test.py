@@ -15,6 +15,7 @@ import traceback
 
 
 runner = None
+# image interpolation factor
 INTERPOLATE = 10
 # MUST set I2C freq to 1MHz in /boot/config.txt
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -28,86 +29,59 @@ def help():
 
 def main():
     model = "python idk.py /home/pi/RTLS_FindMyProfessor/modelfile.eim"
-
     dir_path = os.path.dirname(os.path.realpath(__file__))
     modelfile = os.path.join(dir_path, model)
-        
+    print('MODEL: ' + modelfile)
+
+    # initialize the sensor
     mlx = adafruit_mlx90640.MLX90640(i2c)
     print("MLX addr detected on I2C, Serial #", [hex(i) for i in mlx.serial_number])
     mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
     print(mlx.refresh_rate)
     print("Refresh rate: ", pow(2, (mlx.refresh_rate - 1)), "Hz")
-    print('MODEL: ' + modelfile)
-    
+
     for poskusi in range (0,2000):
-        with ImageImpulseRunner("/home/pi/RTLS_FindMyProfessor/modelfile.eim") as runner:
+        with ImageImpulseRunner(model) as runner:
             try:
                 model_info = runner.init()
                 #print('Loaded runner for "' + model_info['project']['owner'] + ' / ' + model_info['project']['name'] + '"')
                 labels = model_info['model_parameters']['labels']
 
-                frame = [0] * 768
-                while True:
-                    try:
-                        mlx.getFrame(frame)
-                        break
-                    except Exception:
-                        print(traceback.format_exc())
-                        mlx = adafruit_mlx90640.MLX90640(i2c)
-                        mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
-                        continue  # these happen, no biggie - retry
+                 # capture thermal frame
+                 frame = [0] * 768
+                 while True:
+                     try:
+                         mlx.getFrame(frame)
+                         break
+                     except Exception:
+                         #in case we get a traceback error, we just retry the connection and go again, no biggie
+                         print(traceback.format_exc())
+                         mlx = adafruit_mlx90640.MLX90640(i2c)
+                         mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
+                         continue
 
-                pixels = [0] * 768
-                for i, pixel in enumerate(frame):
-                    if pixel < MINTEMP:
+                #Limit the temp range between MINTEMP and MAXTEMP for higher accuracy
+                pixels = [0] * 1024
+                for i in range(0,1024):
+                    if i<128 || i>895:
+                        pixels[i]=MINTEMP
+                    else frame[i] < MINTEMP:
                         pixels[i]=MINTEMP
                     pixels[i] = int((pixel-MINTEMP)*(255/(MAXTEMP-MINTEMP)))
 
-                # pixelrgb = [colors[constrain(int(pixel), 0, COLORDEPTH-1)] for pixel in pixels]
-                img2 = Image.new("L", (32, 24))
+                #use PIL library to interpolate by a factor of INTERPOLATE -> increasing resolution to 320x240 and smoothing out the mosaicing effect
+                img2 = Image.new("L", (32, 32)) #the frame should actually be 32x24, but our Object Detection on Edge Impulse is limted to squares
                 img2.putdata(pixels)
-                img2 = img2.resize((32 * INTERPOLATE, 24 * INTERPOLATE), Image.BICUBIC)
-                img= np.array(img2)
-                #print(img)
-                #img = cv2.imread('/Users/janjongboom/Desktop/jan.jpg')
+                img2 = img2.resize((32 * INTERPOLATE, 32 * INTERPOLATE), Image.BICUBIC)
+                img= np.array(img2) #since CV uses numpy arrays for image manipulation, we convert our PIL image to an array
 
                 features = []
 
-                EI_CLASSIFIER_INPUT_WIDTH = runner.dim[0]
-                EI_CLASSIFIER_INPUT_HEIGHT = runner.dim[1]
-
-                in_frame_cols = img.shape[1]
-                in_frame_rows = img.shape[0]
-
-                factor_w = EI_CLASSIFIER_INPUT_WIDTH / in_frame_cols
-                factor_h = EI_CLASSIFIER_INPUT_HEIGHT / in_frame_rows
-
-                largest_factor = factor_w if factor_w > factor_h else factor_h
-
-                resize_size_w = int(largest_factor * in_frame_cols)
-                resize_size_h = int(largest_factor * in_frame_rows)
-                resize_size = (resize_size_w, resize_size_h)
-
-                resized = cv2.resize(img, resize_size, interpolation = cv2.INTER_AREA)
-
-                crop_x = int((resize_size_w - resize_size_h) / 2) if resize_size_w > resize_size_h else 0
-                crop_y = int((resize_size_h - resize_size_w) / 2) if resize_size_h > resize_size_w else 0
-
-                crop_region = (crop_x, crop_y, EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT)
-
-                cropped = resized[crop_region[1]:crop_region[1]+crop_region[3], crop_region[0]:crop_region[0]+crop_region[2]]
-
-                if runner.isGrayscale:
-                    cropped = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
-                    pixels = np.array(cropped).flatten().tolist()
-                    for p in pixels:
-                        features.append((p << 16) + (p << 8) + p)
-                else:
-                    cv2.imwrite('test.jpg', cropped)
-                    pixels = np.array(cropped).flatten().tolist()
-                    for ix in range(0, len(pixels)):
-                        b = pixels[ix]
-                        features.append((b << 16) + (b << 8) + b)
+                cv2.imwrite('test.jpg', img)
+                pixels_proc = np.array(img).flatten().tolist()
+                for ix in range(0, len(pixels_proc)):
+                    b = pixels_proc[ix]
+                    features.append((b << 16) + (b << 8) + b)
 
                 res = runner.classify(features)
 
