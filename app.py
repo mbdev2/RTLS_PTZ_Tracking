@@ -100,7 +100,7 @@ def rtlsRun():
                     features.append((b << 16) + (b << 8) + b)
 
                 res = runner.classify(features)
-
+                imamoBB=False
                 if "classification" in res["result"].keys():
                     print('Result (%d ms.) ' % (res['timing']['dsp'] + res['timing']['classification']), end='')
                     for label in labels:
@@ -114,10 +114,12 @@ def rtlsRun():
                     for bb in res["result"]["bounding_boxes"]:
                         print('\t%s (%.2f): x=%d y=%d w=%d h=%d' % (bb['label'], bb['value'], bb['x'], bb['y'], bb['width'], bb['height']))
                         koordinate=[bb['value'], bb['x'], bb['y'], bb['width'], bb['height']]
+                        imamoBB=True
                         break
-
-                if avtonomijaONOFF:
-                    socketio.emit('koordinate', {'frame': koordinate}, namespace='/rtls')
+                koordinate=[0.65,243,12,77,65]
+                imamoBB=True
+                if avtonomijaONOFF and imamoBB:
+                    socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
             finally:
                 if (runner):
                     runner.stop()
