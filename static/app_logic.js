@@ -4,60 +4,42 @@ $(document).ready(function(){
     console.log(socket);
     //receive details from server
     socket.on('koordinate', function(msg) {
-        console.log(msg.frame);
+        console.log(msg.koordinate);
+        console.log("Received koordinate" + msg.koordinate[0]);
+        console.log("Received koordinate" + msg.koordinate[1]);
+        console.log("Received koordinate" + msg.koordinate[2]);
+        console.log("Received koordinate" + msg.koordinate[3]);
+        console.log("Received koordinate" + msg.koordinate[4]);
 
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
-        var imgData = ctx.createImageData(32, 24);
-
+        var imgData = ctx.createImageData(640, 640);
+        var cordX=msg.koordinate[1]
+        var cordY=msg.koordinate[2]
+        var certainty=msg.koordinate[0]
+        var width=msg.koordinate[3]
+        var height=msg.koordinate[4]
         var i;
-        var vrednostCelice;
-        var barva = [0,0,0,255];
-
         for (i = 0; i < imgData.data.length; i += 4) {
-            vrednostCelice=msg.frame[i/4]
-            if (vrednostCelice < 19){
-                barva = [40,34,87,255];
-                }
-            else if (vrednostCelice < 21){
-                barva = [7,5,243,255];
-                }
-            else if (vrednostCelice < 23){
-                barva = [59,135,118,255];
-                }
-            else if (vrednostCelice < 25){
-                barva = [145,252,77,255];
-                }
-            else if (vrednostCelice < 27){
-                barva = [212,253,81,255];
-                }
-            else if (vrednostCelice < 29){
-                barva = [253,241,80,255];
-                }
-            else if (vrednostCelice < 31){
-                barva = [247,204,70,255];
-                }
-            else if (vrednostCelice < 33){
-                barva = [236,96,47,255];
-                }
-            else if (vrednostCelice < 35){
-                barva = [236,53,36,255];
-                }
-            else if (vrednostCelice < 37){
-                barva = [235,74,94,255];
-                }
-            else if (vrednostCelice < 39){
-                barva = [237,112,173,255];
-                }
-            imgData.data[i+0] = barva[0];
-            imgData.data[i+1] = barva[1];
-            imgData.data[i+2] = barva[2];
-            imgData.data[i+3] = barva[3];
+           imgData.data[i+0] = 255;
+           imgData.data[i+1] = 255;
+           imgData.data[i+2] = 255;
+           imgData.data[i+3] = 255;
+        }
+        var j;
+        for (i = 0; i < 20; i += 1) {
+         for (j = cordX-9; j < 20+cordX; j += 1) {
+           imgData.data[cordY*2+j] = 0;
+           imgData.data[cordY*2+j] = 0;
+           imgData.data[cordY*2+j] = 0;
+           imgData.data[cordY*2+j] = 255;
+         }
         }
 
-        console.log(c);
+        console.log(c)
         ctx.putImageData(imgData, 0, 0);
-        //number_string = '<h3>Koordinata X: </h3>'+'<p>' + msg.number[0].toString() + '</p>'+ '</br>' +'<h3>Koordinata Y: </h3>'+ '<p>' + msg.number[1].toString() + '</p>';
-        //$('#log').html(number_string);
+        koordinate_string = '<h3>Koordinata X: </h3>'+'<p>' + cordX.toString() + '</p>'+ '</br>' +'<h3>Koordinata Y: </h3>'+ '<p>' + cordY.toString() + '</p>'+'<h3>Certainty: </h3>'+ '<p>' + certainty.toString() + '</p>'+'<h3>Width: </h3>'+ '<p>' + width.toString() + '</p>'+'<h3>Height: </h3>'+ '<p>' + height.toString() + '</p>';
+        $('#log').html(koordinate_string);
+
     });
 });
