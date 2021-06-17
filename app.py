@@ -92,33 +92,33 @@ def rtlsRun():
                 img= np.array(img2) #since CV uses numpy arrays for image manipulation, we convert our PIL image to an array
 
                 features = []
+                if avtonomijaONOFF:
+                    pixels_proc = np.array(img).flatten().tolist()
+                    for ix in range(0, len(pixels_proc)):
+                        b = pixels_proc[ix]
+                        features.append((b << 16) + (b << 8) + b)
 
-                cv2.imwrite('test.jpg', img)
-                pixels_proc = np.array(img).flatten().tolist()
-                for ix in range(0, len(pixels_proc)):
-                    b = pixels_proc[ix]
-                    features.append((b << 16) + (b << 8) + b)
-
-                res = runner.classify(features)
-                imamoBB=False
-                if "classification" in res["result"].keys():
-                    print('Result (%d ms.) ' % (res['timing']['dsp'] + res['timing']['classification']), end='')
-                    for label in labels:
-                        score = res['result']['classification'][label]
-                        print('%s: %.2f\t' % (label, score), end='')
-                    print('', flush=True)
+                    res = runner.classify(features)
+                    imamoBB=False
+                    if "classification" in res["result"].keys():
+                        print('Result (%d ms.) ' % (res['timing']['dsp'] + res['timing']['classification']), end='')
+                        for label in labels:
+                            score = res['result']['classification'][label]
+                            print('%s: %.2f\t' % (label, score), end='')
+                        print('', flush=True)
 
 
-                elif "bounding_boxes" in res["result"].keys():
-                    print('Found %d bounding boxes (%d ms.)' % (len(res["result"]["bounding_boxes"]), res['timing']['dsp'] + res['timing']['classification']))
-                    for bb in res["result"]["bounding_boxes"]:
-                        print('\t%s (%.2f): x=%d y=%d w=%d h=%d' % (bb['label'], bb['value'], bb['x'], bb['y'], bb['width'], bb['height']))
-                        koordinate=[bb['value'], bb['x'], bb['y'], bb['width'], bb['height']]
-                        imamoBB=True
-                        break
+                    elif "bounding_boxes" in res["result"].keys():
+                        print('Found %d bounding boxes (%d ms.)' % (len(res["result"]["bounding_boxes"]), res['timing']['dsp'] + res['timing']['classification']))
+                        for bb in res["result"]["bounding_boxes"]:
+                            print('\t%s (%.2f): x=%d y=%d w=%d h=%d' % (bb['label'], bb['value'], bb['x'], bb['y'], bb['width'], bb['height']))
+                            koordinate=[bb['value'], bb['x'], bb['y'], bb['width'], bb['height']]
+                            imamoBB=True
+                            break
 
-                if avtonomijaONOFF and imamoBB:
-                    socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
+                    if imamoBB:
+                        socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
+                        print("izpis")
             finally:
                 if (runner):
                     runner.stop()
