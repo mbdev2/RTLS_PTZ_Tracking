@@ -100,6 +100,7 @@ def rtlsRun():
 
                     res = runner.classify(features)
                     imamoBB=False
+                    koordinate=[0.66,234,231,40,50]
                     if "classification" in res["result"].keys():
                         print('Result (%d ms.) ' % (res['timing']['dsp'] + res['timing']['classification']), end='')
                         for label in labels:
@@ -112,7 +113,7 @@ def rtlsRun():
                         print('Found %d bounding boxes (%d ms.)' % (len(res["result"]["bounding_boxes"]), res['timing']['dsp'] + res['timing']['classification']))
                         for bb in res["result"]["bounding_boxes"]:
                             print('\t%s (%.2f): x=%d y=%d w=%d h=%d' % (bb['label'], bb['value'], bb['x'], bb['y'], bb['width'], bb['height']))
-                            koordinate=[bb['value'], bb['x'], bb['y'], bb['width'], bb['height']]
+                            koordinate=[bb['value'], abs(320-bb['x']), bb['y'], bb['width'], bb['height']]
                             imamoBB=True
                             break
 
@@ -122,7 +123,7 @@ def rtlsRun():
             finally:
                 if (runner):
                     runner.stop()
-            sleep(1)
+            sleep(0.01)
 
 @app.route("/") # route za osnovno stran
 def home():
@@ -165,4 +166,4 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0', port=5000)

@@ -13,12 +13,12 @@ $(document).ready(function(){
 
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
-        var imgData = ctx.createImageData(640, 640);
-        var cordX=msg.koordinate[1]
-        var cordY=msg.koordinate[2]
+        var imgData = ctx.createImageData(640, 480);
+        var cordX=msg.koordinate[1]*2
+        var cordY=msg.koordinate[2]*2-80
         var certainty=msg.koordinate[0]
-        var width=msg.koordinate[3]
-        var height=msg.koordinate[4]
+        var width=msg.koordinate[3]*2
+        var height=msg.koordinate[4]*2
         var i;
         for (i = 0; i < imgData.data.length; i += 4) {
            imgData.data[i+0] = 255;
@@ -27,12 +27,12 @@ $(document).ready(function(){
            imgData.data[i+3] = 255;
         }
         var j;
-        for (i = 0; i < 20; i += 1) {
-         for (j = cordY-10; j < cordY+10; j += 1) {
-           imgData.data[(cordX+i)*2*4*320+j*4] = 0;
-           imgData.data[(cordX+i)*2*4*320+j*4+1] = 0;
-           imgData.data[(cordX+i)*2*4*320+j*4+2] = 0;
-           imgData.data[(cordX+i)*2*4*320+j*4+3] = 255;
+        for (i = 0; i < height; i += 1) {
+         for (j = cordX-width; j < cordX; j += 1) {
+           imgData.data[(cordY+i)*2*4*320+j*4] = 0;
+           imgData.data[(cordY+i)*2*4*320+j*4+1] = 0;
+           imgData.data[(cordY+i)*2*4*320+j*4+2] = 0;
+           imgData.data[(cordY+i)*2*4*320+j*4+3] = 255;
          }
         }
 
