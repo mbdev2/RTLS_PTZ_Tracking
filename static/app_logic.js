@@ -26,7 +26,10 @@ $(document).ready(function(){
            imgData.data[i+2] = 255;
            imgData.data[i+3] = 255;
         }
-        if (cordX!=-1 && cordY!=-1){
+        if (msg.koordinate[1]==-1 && msg.koordinate[2]==-1){
+	  cordX=-1
+	  cordY=-1
+	}else{
           var j;
           for (i = 0; i < height; i += 1) {
            for (j = cordX-width; j < cordX; j += 1) {
@@ -40,7 +43,7 @@ $(document).ready(function(){
 
         console.log(c)
         ctx.putImageData(imgData, 0, 0);
-        koordinate_string = '<h3>Koordinata X: </h3>'+'<p>' + cordX.toString() + '</p>'+ '</br>' +'<h3>Koordinata Y: </h3>'+ '<p>' + cordY.toString() + '</p>'+'<h3>Certainty: </h3>'+ '<p>' + certainty.toString() + '</p>'+'<h3>Width: </h3>'+ '<p>' + width.toString() + '</p>'+'<h3>Height: </h3>'+ '<p>' + height.toString() + '</p>';
+        koordinate_string = '<h3>Koordinata X: </h3>'+'<p>' + cordX.toString() + '</p>' +'<h3>Koordinata Y: </h3>'+ '<p>' + cordY.toString() + '</p>'+'<h3>Certainty: </h3>'+ '<p>' + certainty.toString() + '</p>'+'<h3>Width: </h3>'+ '<p>' + width.toString() + '</p>'+'<h3>Height: </h3>'+ '<p>' + height.toString() + '</p>';
         $('#log').html(koordinate_string);
 
     });
