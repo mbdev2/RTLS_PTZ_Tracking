@@ -26,14 +26,16 @@ $(document).ready(function(){
            imgData.data[i+2] = 255;
            imgData.data[i+3] = 255;
         }
-        var j;
-        for (i = 0; i < height; i += 1) {
-         for (j = cordX-width; j < cordX; j += 1) {
-           imgData.data[(cordY+i)*2*4*320+j*4] = 0;
-           imgData.data[(cordY+i)*2*4*320+j*4+1] = 0;
-           imgData.data[(cordY+i)*2*4*320+j*4+2] = 0;
-           imgData.data[(cordY+i)*2*4*320+j*4+3] = 255;
-         }
+        if (cordX!=-1 && cordY!=-1){
+          var j;
+          for (i = 0; i < height; i += 1) {
+           for (j = cordX-width; j < cordX; j += 1) {
+             imgData.data[(cordY+i)*2*4*320+j*4] = 0;
+             imgData.data[(cordY+i)*2*4*320+j*4+1] = 0;
+             imgData.data[(cordY+i)*2*4*320+j*4+2] = 0;
+             imgData.data[(cordY+i)*2*4*320+j*4+3] = 255;
+           }
+          }
         }
 
         console.log(c)
