@@ -99,8 +99,7 @@ def rtlsRun():
                         features.append((b << 16) + (b << 8) + b)
 
                     res = runner.classify(features)
-                    imamoBB=False
-                    koordinate=[0,-1,-1,0,0]
+
                     if "classification" in res["result"].keys():
                         #print('Result (%d ms.) ' % (res['timing']['dsp'] + res['timing']['classification']), end='')
                         for label in labels:
@@ -113,11 +112,39 @@ def rtlsRun():
                         #print('Found %d bounding boxes (%d ms.)' % (len(res["result"]["bounding_boxes"]), res['timing']['dsp'] + res['timing']['classification']))
                         for bb in res["result"]["bounding_boxes"]:
                             #print('\t%s (%.2f): x=%d y=%d w=%d h=%d' % (bb['label'], bb['value'], bb['x'], bb['y'], bb['width'], bb['height']))
-                            koordinate=[bb['value'], abs(320-bb['x']), bb['y'], bb['width'], bb['height']]
+                            koordinate=[bb['value'], abs(320-bb['x'])*2, bb['y']*2-80, bb['width']*2, bb['height']*2]
+                            cordX=koordinate[1]-koordinate[3]/2
+                            cordY=koordinate[2]-koordinate[4]/2
+                            aY=300+(abs(cordY-35)*280/255)
+                            bX=abs(cordX-310)*175/210
+                            phi=np.arctan(bX/aY)
+                            print("phi: ", phi)
+                            if koordinate[1] > 310:
+                                pan_val=32768+(phi*5500)
+                            else:
+                                pan_val=32768-(phi*5500)
+                            pan_val_hex="{0:X}".format(pan_val)
+                            print("Pan Hex : ", pan_val)
+                            try:
+                                response = requests.get(
+                                    url="http://212.101.141.80/cgi-bin/aw_ptz",
+                                    params={
+                                        "cmd": "#APC"+string(pan_val_hex)+"8000",
+                                        "res": "1",
+                                    },
+                                    headers={
+                                        "Cookie": "Session=0",
+                                    },
+                                )
+                                print('Response HTTP Status Code: {status_code}'.format(
+                                    status_code=response.status_code))
+                                print('Response HTTP Response Body: {content}'.format(
+                                    content=response.content))
+                            except requests.exceptions.RequestException:
+                                print('HTTP Request failed')
+                            socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
                             break
 
-                    socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
-                        #print("izpis")
             finally:
                 if (runner):
                     runner.stop()

@@ -14,11 +14,11 @@ $(document).ready(function(){
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
         var imgData = ctx.createImageData(640, 480);
-        var cordX=msg.koordinate[1]*2
-        var cordY=msg.koordinate[2]*2-80
+        var cordX=msg.koordinate[1]
+        var cordY=msg.koordinate[2]
         var certainty=msg.koordinate[0]
-        var width=msg.koordinate[3]*2
-        var height=msg.koordinate[4]*2
+        var width=msg.koordinate[3]
+        var height=msg.koordinate[4]
         var i;
         for (i = 0; i < imgData.data.length; i += 4) {
            imgData.data[i+0] = 255;
