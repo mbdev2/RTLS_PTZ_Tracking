@@ -37,6 +37,24 @@ socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True) #sp
 #omogocimo uporabo threada z knjizico
 thread = None
 thread_stop_event = Event()
+def api_call(pan_val_hex):
+    try:
+        response = requests.get(
+            url="http://212.101.141.80/cgi-bin/aw_ptz",
+            params={
+                "cmd": "#APC"+str(pan_val_hex)+"8000",
+                "res": "1",
+            },
+            headers={
+                "Cookie": "Session=0",
+            },
+        )
+        print('Response HTTP Status Code: {status_code}'.format(
+            status_code=response.status_code))
+        print('Response HTTP Response Body: {content}'.format(
+            content=response.content))
+    except requests.exceptions.RequestException:
+        print('HTTP Request failed')
 
 def rtlsRun():
     global avtonomijaONOFF
@@ -118,30 +136,14 @@ def rtlsRun():
                             aY=300+(abs(cordY-35)*280/255)
                             bX=abs(cordX-310)*175/210
                             phi=np.arctan(bX/aY)
-                            print("phi: ", phi)
+                            #print("phi: ", phi)
                             if koordinate[1] > 310:
                                 pan_val=32768+(phi*5500)
                             else:
                                 pan_val=32768-(phi*5500)
-                            pan_val_hex="{0:X}".format(pan_val)
-                            print("Pan Hex : ", pan_val)
-                            try:
-                                response = requests.get(
-                                    url="http://212.101.141.80/cgi-bin/aw_ptz",
-                                    params={
-                                        "cmd": "#APC"+string(pan_val_hex)+"8000",
-                                        "res": "1",
-                                    },
-                                    headers={
-                                        "Cookie": "Session=0",
-                                    },
-                                )
-                                print('Response HTTP Status Code: {status_code}'.format(
-                                    status_code=response.status_code))
-                                print('Response HTTP Response Body: {content}'.format(
-                                    content=response.content))
-                            except requests.exceptions.RequestException:
-                                print('HTTP Request failed')
+                            pan_val_hex=hex(int(pan_val))
+                            print("%X" % int(pan_val))
+                            api_call("%X" % int(pan_val))
                             socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
                             break
 
@@ -191,4 +193,4 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000)
+    socketio.run(app, host='0.0.0.0', port=5013)
