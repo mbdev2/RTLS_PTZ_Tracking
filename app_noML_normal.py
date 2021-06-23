@@ -133,17 +133,17 @@ def rtlsRun():
                     #the left board
                     pan_val=33712
                     tilt_val=32768
-                    zoom_val=2672
+                    zoom_val=2400
                 else:
                     #the right board
                     pan_val=31744
                     tilt_val=32768
-                    zoom_val=2640
+                    zoom_val=2400
             elif cordX<220 and cordX>95 and cordY<185:
                 # static values for professors desk
                 pan_val=30720
                 tilt_val=33700
-                zoom_val=2400
+                zoom_val=2300
             else:
                 #otherwise try to track
                 aY=300+(abs(cordY-35)*280/255)
