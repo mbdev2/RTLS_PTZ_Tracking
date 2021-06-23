@@ -90,7 +90,7 @@ def rtlsRun():
     i2c = busio.I2C(board.SCL, board.SDA)# MUST set I2C freq to 1MHz in /boot/config.txt
     mlx = adafruit_mlx90640.MLX90640(i2c)
     print("MLX addr detected on I2C, Serial #", [hex(i) for i in mlx.serial_number])
-    mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
+    mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_4_HZ
     print(mlx.refresh_rate)
     print("Refresh rate: ", pow(2, (mlx.refresh_rate - 1)), "Hz")
 
@@ -106,7 +106,7 @@ def rtlsRun():
                  #in case we get a traceback error, we just retry the connection and go again, no biggie
                  print(traceback.format_exc())
                  mlx = adafruit_mlx90640.MLX90640(i2c)
-                 mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_2_HZ
+                 mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_4_HZ
                  continue
 
         #Limit the temp range between MINTEMP and MAXTEMP for higher accuracy
@@ -142,7 +142,7 @@ def rtlsRun():
                     pan_val=31744
                     tilt_val=32768
                     zoom_val=2400
-            elif cordX<220 and cordX>95 and cordY<185:
+            elif cordX<220 and cordX>95 and cordY<190:
                 # static values for professors desk
                 pan_val=30720
                 tilt_val=33700
@@ -208,4 +208,4 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000)
+    socketio.run(app, host='0.0.0.0', port=5001)
