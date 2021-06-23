@@ -112,7 +112,9 @@ def rtlsRun():
         #Limit the temp range between MINTEMP and MAXTEMP for higher accuracy
         pixels = [0] * 768
         for i in range(0,767):
-            if frame[i] < MINTEMP:
+            if i%32<28 and i%32>19 and i <192:
+                pixels[i]=MINTEMP
+            elif frame[i] < MINTEMP:
                 pixels[i]=MINTEMP
             else:
                 pixels[i]=frame[i]
@@ -124,6 +126,7 @@ def rtlsRun():
         img2 = img2.resize((32 * INTERPOLATE, 24 * INTERPOLATE), Image.BICUBIC)
         img= np.array(img2) #since CV uses numpy arrays for image manipulation, we convert our PIL image to an array
 
+
         if avtonomijaONOFF and np.amax(img)>140:
             result = np.where(img == np.amax(img))
             cordX=int(320-result[1][0])*2
@@ -133,17 +136,17 @@ def rtlsRun():
                     #the left board
                     pan_val=33712
                     tilt_val=32768
-                    zoom_val=2672
+                    zoom_val=2400
                 else:
                     #the right board
                     pan_val=31744
                     tilt_val=32768
-                    zoom_val=2640
+                    zoom_val=2400
             elif cordX<220 and cordX>95 and cordY<185:
                 # static values for professors desk
                 pan_val=30720
                 tilt_val=33700
-                zoom_val=2400
+                zoom_val=2300
             else:
                 #otherwise try to track
                 aY=300+(abs(cordY-35)*280/255)
