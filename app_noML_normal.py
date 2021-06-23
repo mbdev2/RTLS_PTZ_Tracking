@@ -21,6 +21,7 @@ import sys, getopt
 import numpy as np
 from edge_impulse_linux.image import ImageImpulseRunner
 import traceback
+import math
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -127,7 +128,7 @@ def rtlsRun():
             result = np.where(img == np.amax(img))
             cordX=int(320-result[1][0])*2
             cordY=int(result[0][0])*2
-            if cordY>230:
+            if cordY>360:
                 if cordX>310:
                     #the left board
                     pan_val=33712
@@ -138,7 +139,7 @@ def rtlsRun():
                     pan_val=31744
                     tilt_val=32768
                     zoom_val=2640
-            elif cordX<220 and cordX>95 and cordY<150:
+            elif cordX<220 and cordX>95 and cordY<185:
                 # static values for professors desk
                 pan_val=30720
                 tilt_val=33700
@@ -204,4 +205,4 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000)
+    socketio.run(app, host='0.0.0.0', port=5006)
