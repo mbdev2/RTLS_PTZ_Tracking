@@ -31,7 +31,6 @@ runner = None #EdgeImpulse runner startup
 INTERPOLATE = 10# image interpolation factor
 MINTEMP =22.0 # low range of the sensor (this will be black on the screen)
 MAXTEMP = 38.0 # high range of the sensor (this will be white on the screen)
-koordinate_history=[0.0,0,0,0,0]
 
 socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True) #spremenimo flask app v socketio app
 
@@ -108,23 +107,28 @@ def rtlsRun():
                  continue
 
         #Limit the temp range between MINTEMP and MAXTEMP for higher accuracy
-        pixels = [0] * 768
-        for i in range(0,767):
-            if frame[i] < MINTEMP:
+        pixels = [0] * 1024
+        for i in range(0,1023):
+            if i<128 or i>895:
+                pixels[i]=MINTEMP
+            elif frame[i-128] < MINTEMP:
                 pixels[i]=MINTEMP
             else:
-                pixels[i]=frame[i]
+                pixels[i]=frame[i-128]
             pixels[i] = int((pixels[i]-MINTEMP)*(255/(MAXTEMP-MINTEMP)))
 
-
-        img= np.array(pixels) #since CV uses numpy arrays for image manipulation, we convert our PIL image to an array
+        #use PIL library to interpolate by a factor of INTERPOLATE -> increasing resolution to 320x240 and smoothing out the mosaicing effect
+        img2 = Image.new("L", (32, 32)) #the frame should actually be 32x24, but our Object Detection on Edge Impulse is limted to squares
+        img2.putdata(pixels)
+        img2 = img2.resize((32 * INTERPOLATE, 32 * INTERPOLATE), Image.BICUBIC)
+        img= np.array(img2) #since CV uses numpy arrays for image manipulation, we convert our PIL image to an array
 
         if avtonomijaONOFF and np.amax(img)>140:
             result = np.where(img == np.amax(img))
-            cordX=int(32-result[1][0])
-            cordY=int(result[0][0])
-            if cordY>11:
-                if cordX>15:
+            cordX=int(320-result[1][0])*2
+            cordY=int(result[0][0]-80)*2
+            if cordY>230:
+                if cordX>310:
                     #the left board
                     pan_val=33712
                     tilt_val=32768
@@ -134,31 +138,26 @@ def rtlsRun():
                     pan_val=31744
                     tilt_val=32768
                     zoom_val=2640
-            elif cordX<11 and cordX>0 and cordY<7:
+            elif cordX<220 and cordX>95 and cordY<150:
                 # static values for professors desk
                 pan_val=30720
                 tilt_val=33700
                 zoom_val=2400
             else:
                 #otherwise try to track
-                aY=300+(cordY*280/255*20)
-                bX=abs(cordX-15)*175/210*20
+                aY=300+(abs(cordY-35)*280/255)
+                bX=abs(cordX-310)*175/210
                 phi=np.arctan(bX/aY)
                 tilt_val=32768
                 zoom_val=2100
-                if cordX > 15:
+                if cordX > 310:
                     pan_val=32768+(phi*5500)
                 else:
                     pan_val=32768-(phi*5500)
             api_call_PT("%X" % int(pan_val), "%X" % int(tilt_val))
             api_call_Z("%X" % int(zoom_val))
-            koordinate=[1.0, cordX*20, cordY*20, 10, 10]
-            if sqrt(abs(cordX^2-starX^2)+abs(cordY^2-starY^2))<12:
-                api_call_PT("%X" % int(pan_val), "%X" % int(tilt_val))
-                api_call_Z("%X" % int(zoom_val))
-                socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
-            starX=cordX
-            starY=cordY
+            koordinate=[1.0, cordX, cordY, 10, 10]
+            socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
             sleep(0.01)
 
 @app.route("/") # route za osnovno stran
