@@ -123,10 +123,10 @@ def rtlsRun():
         img2 = img2.resize((32 * INTERPOLATE, 32 * INTERPOLATE), Image.BICUBIC)
         img= np.array(img2) #since CV uses numpy arrays for image manipulation, we convert our PIL image to an array
 
-        if avtonomijaONOFF:
-            result = numpy.where(img == numpy.amax(img))
-            cordX=result[0]
-            cordY=result[1]
+        if avtonomijaONOFF and np.amax(img)>140:
+            result = np.where(img == np.amax(img))
+            cordX=int(320-result[1][0])*2
+            cordY=int(result[0][0]-80)*2
             if cordY>230:
                 if cordX>310:
                     #the left board
@@ -150,12 +150,13 @@ def rtlsRun():
                 phi=np.arctan(bX/aY)
                 tilt_val=32768
                 zoom_val=2100
-                if koordinate[1] > 310:
+                if cordX > 310:
                     pan_val=32768+(phi*5500)
                 else:
                     pan_val=32768-(phi*5500)
             api_call_PT("%X" % int(pan_val), "%X" % int(tilt_val))
             api_call_Z("%X" % int(zoom_val))
+            koordinate=[1.0, cordX, cordY, 10, 10]
             socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
             sleep(0.01)
 
