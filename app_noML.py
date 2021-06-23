@@ -21,6 +21,7 @@ import sys, getopt
 import numpy as np
 from edge_impulse_linux.image import ImageImpulseRunner
 import traceback
+import math
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -31,7 +32,8 @@ runner = None #EdgeImpulse runner startup
 INTERPOLATE = 10# image interpolation factor
 MINTEMP =22.0 # low range of the sensor (this will be black on the screen)
 MAXTEMP = 38.0 # high range of the sensor (this will be white on the screen)
-koordinate_history=[0.0,0,0,0,0]
+starX=0
+starY=0
 
 socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True) #spremenimo flask app v socketio app
 
@@ -83,6 +85,8 @@ def api_call_Z(zoom_val_hex):
 
 def rtlsRun():
     global avtonomijaONOFF
+    global starX
+    global starY
 
     # initialize the sensor
     i2c = busio.I2C(board.SCL, board.SDA)# MUST set I2C freq to 1MHz in /boot/config.txt
@@ -118,9 +122,10 @@ def rtlsRun():
 
 
         img= np.array(pixels) #since CV uses numpy arrays for image manipulation, we convert our PIL image to an array
-
+        img = np.reshape(img, (32,24))
         if avtonomijaONOFF and np.amax(img)>140:
             result = np.where(img == np.amax(img))
+            print(result)
             cordX=int(32-result[1][0])
             cordY=int(result[0][0])
             if cordY>11:
@@ -153,13 +158,13 @@ def rtlsRun():
             api_call_PT("%X" % int(pan_val), "%X" % int(tilt_val))
             api_call_Z("%X" % int(zoom_val))
             koordinate=[1.0, cordX*20, cordY*20, 10, 10]
-            if sqrt(abs(cordX^2-starX^2)+abs(cordY^2-starY^2))<12:
+            if math.sqrt(abs(cordX^2-starX^2)+abs(cordY^2-starY^2))<15:
                 api_call_PT("%X" % int(pan_val), "%X" % int(tilt_val))
                 api_call_Z("%X" % int(zoom_val))
                 socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
             starX=cordX
             starY=cordY
-            sleep(0.01)
+            sleep(0.1)
 
 @app.route("/") # route za osnovno stran
 def home():
@@ -202,4 +207,4 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000)
+    socketio.run(app, host='0.0.0.0', port=5002)
