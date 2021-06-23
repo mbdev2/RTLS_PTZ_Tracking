@@ -112,7 +112,9 @@ def rtlsRun():
         #Limit the temp range between MINTEMP and MAXTEMP for higher accuracy
         pixels = [0] * 768
         for i in range(0,767):
-            if frame[i] < MINTEMP:
+            if i%32<28 and i%32>19 and i <192:
+                pixels[i]=MINTEMP
+            elif frame[i] < MINTEMP:
                 pixels[i]=MINTEMP
             else:
                 pixels[i]=frame[i]
@@ -123,6 +125,7 @@ def rtlsRun():
         img2.putdata(pixels)
         img2 = img2.resize((32 * INTERPOLATE, 24 * INTERPOLATE), Image.BICUBIC)
         img= np.array(img2) #since CV uses numpy arrays for image manipulation, we convert our PIL image to an array
+
 
         if avtonomijaONOFF and np.amax(img)>140:
             result = np.where(img == np.amax(img))
