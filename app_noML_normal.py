@@ -165,6 +165,8 @@ def rtlsRun():
                 api_call_Z("%X" % int(zoom_val))
                 koordinate=[1.0, cordX, cordY, 10, 10]
                 socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
+            starX=cordX
+            starY=cordY
             sleep(0.01)
 
 @app.route("/") # route za osnovno stran
