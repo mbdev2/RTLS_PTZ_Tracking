@@ -85,7 +85,8 @@ def api_call_Z(zoom_val_hex):
 
 def rtlsRun():
     global avtonomijaONOFF
-
+    global starX
+    global starY
     # initialize the sensor
     i2c = busio.I2C(board.SCL, board.SDA)# MUST set I2C freq to 1MHz in /boot/config.txt
     mlx = adafruit_mlx90640.MLX90640(i2c)
