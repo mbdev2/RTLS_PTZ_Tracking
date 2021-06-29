@@ -47,7 +47,7 @@ def api_call_PT(pan_val_hex, tilt_val_hex):
         response = requests.get(
             url="http://212.101.141.80/cgi-bin/aw_ptz",
             params={
-                "cmd": "#APC"+str(pan_val_hex)+str(tilt_val_hex),
+                "cmd": "#APS"+str(pan_val_hex)+str(tilt_val_hex)+str(120),
                 "res": "1",
             },
             headers={
@@ -113,9 +113,7 @@ def rtlsRun():
         #Limit the temp range between MINTEMP and MAXTEMP for higher accuracy
         pixels = [0] * 768
         for i in range(0,767):
-            if i%32<28 and i%32>19 and i <192:
-                pixels[i]=MINTEMP
-            elif frame[i] < MINTEMP:
+            if frame[i] < MINTEMP:
                 pixels[i]=MINTEMP
             else:
                 pixels[i]=frame[i]
@@ -127,38 +125,53 @@ def rtlsRun():
         img2 = img2.resize((32 * INTERPOLATE, 24 * INTERPOLATE), Image.BICUBIC)
         img= np.array(img2) #since CV uses numpy arrays for image manipulation, we convert our PIL image to an array
 
+        #omejitve
+        for x in range(0,319):
+            for y in range(0,239):
+                if y < 65 and x > 205:
+                    img[x][y]=0
+                if y < 45 or x < 55 or x > 275:
+                    img[x][y]=0
+
+        oddaljenostKamere=295
+        radToPan=5835
+        differenceY=330
+        differenceXhalf=220
+        height=280
+        halfLength=170
 
         if avtonomijaONOFF and np.amax(img)>140:
             result = np.where(img == np.amax(img))
             cordX=int(320-result[1][0])*2
             cordY=int(result[0][0])*2
-            if cordY>360:
+            if cordY>350:
                 if cordX>310:
                     #the left board
-                    pan_val=33712
-                    tilt_val=32768
-                    zoom_val=2400
+                    pan_val=33952
+                    tilt_val=32816
+                    zoom_val=2500
                 else:
                     #the right board
-                    pan_val=31744
-                    tilt_val=32768
-                    zoom_val=2400
-            elif cordX<220 and cordX>95 and cordY<190:
+                    pan_val=31968
+                    tilt_val=32816
+                    zoom_val=2500
+            elif cordX<230 and cordX>85 and cordY<190:
                 # static values for professors desk
                 pan_val=30720
                 tilt_val=33700
                 zoom_val=2300
             else:
                 #otherwise try to track
-                aY=300+(abs(cordY-35)*280/255)
-                bX=abs(cordX-310)*175/210
+                aY=oddaljenostKamere+(abs(cordY-90)*height/differenceY)
+                bX=abs(cordX-310)*halfLength/differenceXhalf
+                cXY=math.sqrt(aY^2+bX^2)
                 phi=np.arctan(bX/aY)
-                tilt_val=32768
-                zoom_val=2100
+                tilt_val=32768+cXY*50/260
+                zoom_val=2200
                 if cordX > 310:
-                    pan_val=32768+(phi*5500)
+                    pan_val=32768+(phi*radToPan)
                 else:
-                    pan_val=32768-(phi*5500)
+                    pan_val=32768-(phi*radToPan)
 
             razdaljaStarNov=math.sqrt(abs(cordX^2-starX^2)+abs(cordY^2-starY^2))
             if razdaljaStarNov<300:
