@@ -47,7 +47,7 @@ def api_call_PT(pan_val_hex, tilt_val_hex):
         response = requests.get(
             url="http://212.101.141.80/cgi-bin/aw_ptz",
             params={
-                "cmd": "#APS"+str(pan_val_hex)+str(tilt_val_hex)+str(120),
+                "cmd": "#APS"+str(pan_val_hex)+str(tilt_val_hex)+"0E0",
                 "res": "1",
             },
             headers={
@@ -129,9 +129,9 @@ def rtlsRun():
         for x in range(0,319):
             for y in range(0,239):
                 if y < 65 and x > 205:
-                    img[x][y]=0
+                    img[y][x]=0
                 if y < 45 or x < 55 or x > 275:
-                    img[x][y]=0
+                    img[y][x]=0
 
         oddaljenostKamere=295
         radToPan=5835
@@ -164,7 +164,7 @@ def rtlsRun():
                 #otherwise try to track
                 aY=oddaljenostKamere+(abs(cordY-90)*height/differenceY)
                 bX=abs(cordX-310)*halfLength/differenceXhalf
-                cXY=math.sqrt(aY^2+bX^2)
+                cXY=math.sqrt(int(aY)^2+int(bX)^2)
                 phi=np.arctan(bX/aY)
                 tilt_val=32768+cXY*50/260
                 zoom_val=2200
@@ -224,4 +224,4 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000)
+    socketio.run(app, host='0.0.0.0', port=5001)
