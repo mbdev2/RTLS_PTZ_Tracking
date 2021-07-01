@@ -41,9 +41,8 @@ $(document).ready(function(){
           }
         }
 
-        console.log(c)
         ctx.putImageData(imgData, 0, 0);
-        koordinate_string = '<h3>Koordinata X: </h3>'+'<p>' + cordX.toString() + '</p>' +'<h3>Koordinata Y: </h3>'+ '<p>' + cordY.toString() + '</p>'+'<h3>Certainty: </h3>'+ '<p>' + certainty.toString() + '</p>'+'<h3>Width: </h3>'+ '<p>' + width.toString() + '</p>'+'<h3>Height: </h3>'+ '<p>' + height.toString() + '</p>';
+        koordinate_string = '<h3>Koordinata X: </h3>'+'<p>' + cordX.toString() + '</p>' +'<h3>Koordinata Y: </h3>'+ '<p>' + cordY.toString() + '</p>';
         $('#log').html(koordinate_string);
 
     });

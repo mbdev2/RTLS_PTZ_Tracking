@@ -174,7 +174,8 @@ def rtlsRun():
                     pan_val=32768-(phi*radToPan)
 
             razdaljaStarNov=math.sqrt(abs(cordX^2-starX^2)+abs(cordY^2-starY^2))
-            if razdaljaStarNov<300:
+            print("Test razdalja",razdaljaStarNov)
+            if razdaljaStarNov<300 && razdaljaStarNov>10:
                 api_call_PT("%X" % int(pan_val), "%X" % int(tilt_val))
                 api_call_Z("%X" % int(zoom_val))
                 koordinate=[1.0, cordX, cordY, 10, 10]
