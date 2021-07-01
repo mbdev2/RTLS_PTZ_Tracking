@@ -54,10 +54,10 @@ def api_call_PT(pan_val_hex, tilt_val_hex):
                 "Cookie": "Session=0",
             },
         )
-        print('Response HTTP Status Code: {status_code}'.format(
-            status_code=response.status_code))
-        print('Response HTTP Response Body: {content}'.format(
-            content=response.content))
+        #print('Response HTTP Status Code: {status_code}'.format(
+            #status_code=response.status_code))
+        #print('Response HTTP Response Body: {content}'.format(
+            #content=response.content))
     except requests.exceptions.RequestException:
         print('HTTP Request failed')
 
@@ -76,10 +76,10 @@ def api_call_Z(zoom_val_hex):
                 "Cookie": "Session=0",
             },
         )
-        print('Response HTTP Status Code: {status_code}'.format(
-            status_code=response.status_code))
-        print('Response HTTP Response Body: {content}'.format(
-            content=response.content))
+        #print('Response HTTP Status Code: {status_code}'.format(
+            #status_code=response.status_code))
+       # print('Response HTTP Response Body: {content}'.format(
+            #content=response.content))
     except requests.exceptions.RequestException:
         print('HTTP Request failed')
 
@@ -173,9 +173,9 @@ def rtlsRun():
                 else:
                     pan_val=32768-(phi*radToPan)
 
-            razdaljaStarNov=math.sqrt(abs(cordX^2-starX^2)+abs(cordY^2-starY^2))
+            razdaljaStarNov=math.sqrt(math.pow((cordX-starX),2)+math.pow((cordY-starY),2))
             print("Test razdalja",razdaljaStarNov)
-            if razdaljaStarNov<300 && razdaljaStarNov>10:
+            if razdaljaStarNov<300 and razdaljaStarNov>15:
                 api_call_PT("%X" % int(pan_val), "%X" % int(tilt_val))
                 api_call_Z("%X" % int(zoom_val))
                 koordinate=[1.0, cordX, cordY, 10, 10]
