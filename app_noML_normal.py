@@ -134,7 +134,7 @@ def rtlsRun():
             for y in range(0,239):
                 if y < robKatederY and x > robKatederX:
                     img[y][x]=0
-                if y < robY or x < robXL or x > robXR:
+                if y < robYspredaj or x < robXlevo or x > robXdesno:
                     img[y][x]=0
 
         Bkamere=295
@@ -159,13 +159,10 @@ def rtlsRun():
                     ZOOM=2500
                 else:
                     #the right board
-<<<<<<< HEAD
-=======
                     PAN=31968
                     TILT=32816
                     ZOOM=2500
             elif cordX<mejaKatederXdesno and cordX>mejaKatederXlevo and cordY<mejaKatederY:
->>>>>>> f7e74f67f9c221fe87b1122427023a493b9dbe0f
                 # static values for professors desk
                 PAN=30720
                 TILT=33700
@@ -235,4 +232,4 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5002)
+    socketio.run(app, host='0.0.0.0', port=5000)
