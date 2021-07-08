@@ -129,7 +129,7 @@ def rtlsRun():
         robXlevo=45
         robXdesno=265
         robKatederX=205
-        robKatederY=65
+        robKatederY=70
         for x in range(0,319):
             for y in range(0,239):
                 if y < robKatederY and x > robKatederX:
