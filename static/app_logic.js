@@ -39,32 +39,32 @@ $(document).ready(function(){
         }else{
           //kateder
           var j;
-          for (i = 0; i < mejaKatederY; i += 1) {
+          for (i = robYspredaj; i < mejaKatederY; i += 1) {
            for (j = mejaKatederXlevo; j < mejaKatederXdesno; j += 1) {
-             imgData.data[(robYspredaj+i)*2*4*320+j*4] = 234;
-             imgData.data[(robYspredaj+i)*2*4*320+j*4+1] = 179;
-             imgData.data[(robYspredaj+i)*2*4*320+j*4+2] = 138;
-             imgData.data[(robYspredaj+i)*2*4*320+j*4+3] = 255;
+             imgData.data[(i)*2*4*320+j*4] = 234;
+             imgData.data[(i)*2*4*320+j*4+1] = 179;
+             imgData.data[(i)*2*4*320+j*4+2] = 138;
+             imgData.data[(i)*2*4*320+j*4+3] = 255;
            }
           }
           //leva talbla
           var j;
-          for (i = 0; i < 479; i += 1) {
+          for (i = mejaTable; i < 479; i += 1) {
            for (j = xSredina; j < robXdesno; j += 1) {
-             imgData.data[(mejaTable+i)*2*4*320+j*4] = 249;
-             imgData.data[(mejaTable+i)*2*4*320+j*4+1] = 218;
-             imgData.data[(mejaTable+i)*2*4*320+j*4+2] = 120;
-             imgData.data[(mejaTable+i)*2*4*320+j*4+3] = 255;
+             imgData.data[(i)*2*4*320+j*4] = 249;
+             imgData.data[(i)*2*4*320+j*4+1] = 218;
+             imgData.data[(i)*2*4*320+j*4+2] = 120;
+             imgData.data[(i)*2*4*320+j*4+3] = 255;
            }
           }
           //desna tabla
           var j;
-          for (i = 0; i < mejaTable; i += 1) {
-           for (j = 0; j < xSredina; j += 1) {
-             imgData.data[(robXlevo+i)*2*4*320+j*4] = 177;
-             imgData.data[(robXlevo+i)*2*4*320+j*4+1] = 208;
-             imgData.data[(robXlevo+i)*2*4*320+j*4+2] = 149;
-             imgData.data[(robXlevo+i)*2*4*320+j*4+3] = 255;
+          for (i = robXlevo; i < mejaTable; i += 1) {
+           for (j = 90; j < xSredina; j += 1) {
+             imgData.data[(i)*2*4*320+j*4] = 177;
+             imgData.data[(i)*2*4*320+j*4+1] = 208;
+             imgData.data[(i)*2*4*320+j*4+2] = 149;
+             imgData.data[(i)*2*4*320+j*4+3] = 255;
            }
           }
           var j;
