@@ -203,6 +203,24 @@ def nastaviPresetPTZ():
     global avtonomijaONOFF #povemo sistemu da uporabljamo globalno srepemnljivko avtonomijaONOFF
     avtonomijaONOFF = False #ustavi avtonomno upravljanje kamere
     print("Izbrani preset za PTZ: ", izbranPreset) #izpisemo v terminal ker preset je
+    if izbranPreset == 1:
+        PAN=32768
+        TILT=32768
+        ZOOM=1365
+    else if izbranPreset == 2:
+        PAN=33952
+        TILT=32816
+        ZOOM=2500
+    else if izbranPreset == 3:
+        PAN=31968
+        TILT=32816
+        ZOOM=2500
+    else if izbranPreset == 4:
+        PAN=30720
+        TILT=33700
+        ZOOM=2300
+    api_call_PT("%X" % int(PAN), "%X" % int(TILT))
+    api_call_Z("%X" % int(ZOOM))
     return render_template('findmyprofessor.html', status=izbranPreset)
 
 @app.route("/auto", methods=["POST"]) #route za zagon avtonomnega sistema sledenja
@@ -210,7 +228,7 @@ def zagonAvtonomnegaSistema():
     global avtonomijaONOFF #povemo sistemu da uporabljamo globalno srepemnljivko avtonomijaONOFF
     avtonomijaONOFF = True #ustavi avtonomno upravljanje kamere
     print("Zagon avtonomnega sistema MLX90640")
-    return render_template('findmyprofessor.html', status=4)
+    return render_template('findmyprofessor.html', status=5)
 
 @socketio.on('connect', namespace='/rtls')
 def test_connect():
