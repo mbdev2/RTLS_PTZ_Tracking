@@ -59,8 +59,8 @@ $(document).ready(function(){
           }
           //desna tabla
           var j;
-          for (i = robXlevo; i < mejaTable; i += 1) {
-           for (j = 90; j < xSredina; j += 1) {
+          for (i = mejaTable; i < 639; i += 1) {
+           for (j = robXlevo; j < xSredina; j += 1) {
              imgData.data[(i)*2*4*320+j*4] = 177;
              imgData.data[(i)*2*4*320+j*4+1] = 208;
              imgData.data[(i)*2*4*320+j*4+2] = 149;
