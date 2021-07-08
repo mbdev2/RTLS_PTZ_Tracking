@@ -99,16 +99,15 @@ def rtlsRun():
 
          # capture thermal frame
         frame = [0] * 768
-        while True:
+        while True: #poskušamo prebrati dokler ne dela
              try:
-                 mlx.getFrame(frame)
-                 break
-             except Exception:
-                 #in case we get a traceback error, we just retry the connection and go again, no biggie
+                 mlx.getFrame(frame) #branje slike
+                 break #če preberemo, končamo z poskušanjem
+             except Exception: #če slučajno dobimo traceback error zaradi ne sinhronizacije I2C
                  print(traceback.format_exc())
-                 mlx = adafruit_mlx90640.MLX90640(i2c)
-                 mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_4_HZ
-                 continue
+                 mlx = adafruit_mlx90640.MLX90640(i2c) #ponovna vzpostavitev I2C povezave do kamere
+                 mlx.refresh_rate = adafruit_mlx90640.RefreshRate.REFRESH_4_HZ #nastavitev hitrosti osvezevanja na 4Hz
+                 continue #ponovim izvajanje od začetka zanke
 
         #Limit the temp range between MINTEMP and MAXTEMP for higher accuracy
         pixels = [0] * 768
@@ -126,59 +125,70 @@ def rtlsRun():
         img= np.array(img2) #since CV uses numpy arrays for image manipulation, we convert our PIL image to an array
 
         #omejitve
+        robYspredaj=45
+        robXlevo=45
+        robXdesno=275
+        robKatederX=205
+        robKatederY=65
         for x in range(0,319):
             for y in range(0,239):
-                if y < 65 and x > 205:
+                if y < robKatederY and x > robKatederX:
                     img[y][x]=0
-                if y < 45 or x < 55 or x > 275:
+                if y < robY or x < robXL or x > robXR:
                     img[y][x]=0
 
-        oddaljenostKamere=295
-        radToPan=5835
-        differenceY=330
-        differenceXhalf=220
-        height=280
-        halfLength=170
+        Bkamere=295
+        deltaRAD=5835
+        Bpolja=280
+        Apolja=340
+        Xsr=310
+        mejaTable=350
+        mejaKatederY=190
+        mejaKatederXlevo=85
+        mejaKatederXdesno=230
 
         if avtonomijaONOFF and np.amax(img)>140:
             result = np.where(img == np.amax(img))
             cordX=int(320-result[1][0])*2
             cordY=int(result[0][0])*2
-            if cordY>350:
-                if cordX>310:
+            if cordY>mejaTable:
+                if cordX>Xsr:
                     #the left board
-                    pan_val=33952
-                    tilt_val=32816
-                    zoom_val=2500
+                    PAN=33952
+                    TILT=32816
+                    ZOOM=2500
                 else:
                     #the right board
-                    pan_val=31968
-                    tilt_val=32816
-                    zoom_val=2500
-            elif cordX<230 and cordX>85 and cordY<170:
+<<<<<<< HEAD
+=======
+                    PAN=31968
+                    TILT=32816
+                    ZOOM=2500
+            elif cordX<mejaKatederXdesno and cordX>mejaKatederXlevo and cordY<mejaKatederY:
+>>>>>>> f7e74f67f9c221fe87b1122427023a493b9dbe0f
                 # static values for professors desk
-                pan_val=30720
-                tilt_val=33700
-                zoom_val=2300
+                PAN=30720
+                TILT=33700
+                ZOOM=2300
             else:
                 #otherwise try to track
-                aY=oddaljenostKamere+(abs(cordY-90)*height/differenceY)
-                bX=abs(cordX-310)*halfLength/differenceXhalf
-                cXY=math.sqrt(int(aY)^2+int(bX)^2)
-                phi=np.arctan(bX/aY)
-                tilt_val=32768+cXY*50/260
-                zoom_val=2200
+                Aosebe=(abs(cordX-Xsr)*Apolja/2)/(420-90)
+                Bosebe=Bkamere+(abs(cordY-90)*Bpolja/(530-310))
+                C=math.sqrt(int(Bosebe)^2+int(Aosebe)^2)
+                alpha=np.arctan(Aosebe/Bosebe)
+                TILT=32768+C*50/260
+                ZOOM=2200
                 if cordX > 310:
-                    pan_val=32768+(phi*radToPan)
+                    PAN=32768+(alpha*deltaRAD)
                 else:
-                    pan_val=32768-(phi*radToPan)
+                    PAN=32768-(alpha*deltaRAD)
 
             razdaljaStarNov=math.sqrt(math.pow((cordX-starX),2)+math.pow((cordY-starY),2))
             print("Test razdalja",razdaljaStarNov)
             if razdaljaStarNov<300 and razdaljaStarNov>15:
-                api_call_PT("%X" % int(pan_val), "%X" % int(tilt_val))
-                api_call_Z("%X" % int(zoom_val))
-                koordinate=[1.0, cordX, cordY, 10, 10]
+                api_call_PT("%X" % int(PAN), "%X" % int(TILT))
+                api_call_Z("%X" % int(ZOOM))
+                koordinate=[1.0, cordX, cordY, 10, 10, robYspredaj*2, robXlevo*2, robXdesno*2, robKatederX*2, robKatederY*2, Xsr, mejaTable, mejaKatederY, mejaKatederXdesno, mejaKatederXlevo]
                 socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
             starX=cordX
             starY=cordY

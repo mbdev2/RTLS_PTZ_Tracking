@@ -5,11 +5,6 @@ $(document).ready(function(){
     //receive details from server
     socket.on('koordinate', function(msg) {
         console.log(msg.koordinate);
-        console.log("Received koordinate" + msg.koordinate[0]);
-        console.log("Received koordinate" + msg.koordinate[1]);
-        console.log("Received koordinate" + msg.koordinate[2]);
-        console.log("Received koordinate" + msg.koordinate[3]);
-        console.log("Received koordinate" + msg.koordinate[4]);
 
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
@@ -19,17 +14,59 @@ $(document).ready(function(){
         var certainty=msg.koordinate[0]
         var width=msg.koordinate[3]
         var height=msg.koordinate[4]
+        var robYspredaj=msg.koordinate[5]
+        var robXlevo=msg.koordinate[6]
+        var robXdesno=msg.koordinate[7]
+        var robKatederX=msg.koordinate[8]
+        var robKatederY=msg.koordinate[9]
+        var xSredina=msg.koordinate[10]
+        var mejaTable=msg.koordinate[11]
+        var mejaKatederY=msg.koordinate[12]
+        var mejaKatederXdesno=msg.koordinate[13]
+        var mejaKatederXlevo=msg.koordinate[14]
+
+
         var i;
         for (i = 0; i < imgData.data.length; i += 4) {
-           imgData.data[i+0] = 255;
-           imgData.data[i+1] = 255;
-           imgData.data[i+2] = 255;
+           imgData.data[i+0] = 148;
+           imgData.data[i+1] = 169;
+           imgData.data[i+2] = 216;
            imgData.data[i+3] = 255;
         }
         if (msg.koordinate[1]==-1 && msg.koordinate[2]==-1){
-	  cordX=-1
-	  cordY=-1
-	}else{
+          cordX=-1
+          cordY=-1
+        }else{
+          //kateder
+          var j;
+          for (i = 0; i < mejaKatederY; i += 1) {
+           for (j = mejaKatederXlevo; j < mejaKatederXdesno; j += 1) {
+             imgData.data[(robYspredaj+i)*2*4*320+j*4] = 234;
+             imgData.data[(robYspredaj+i)*2*4*320+j*4+1] = 179;
+             imgData.data[(robYspredaj+i)*2*4*320+j*4+2] = 138;
+             imgData.data[(robYspredaj+i)*2*4*320+j*4+3] = 255;
+           }
+          }
+          //leva talbla
+          var j;
+          for (i = 0; i < 479; i += 1) {
+           for (j = xSredina; j < robXdesno; j += 1) {
+             imgData.data[(mejaTable+i)*2*4*320+j*4] = 249;
+             imgData.data[(mejaTable+i)*2*4*320+j*4+1] = 218;
+             imgData.data[(mejaTable+i)*2*4*320+j*4+2] = 120;
+             imgData.data[(mejaTable+i)*2*4*320+j*4+3] = 255;
+           }
+          }
+          //desna tabla
+          var j;
+          for (i = 0; i < mejaTable; i += 1) {
+           for (j = 0; j < xSredina; j += 1) {
+             imgData.data[(robXlevo+i)*2*4*320+j*4] = 177;
+             imgData.data[(robXlevo+i)*2*4*320+j*4+1] = 208;
+             imgData.data[(robXlevo+i)*2*4*320+j*4+2] = 149;
+             imgData.data[(robXlevo+i)*2*4*320+j*4+3] = 255;
+           }
+          }
           var j;
           for (i = 0; i < height; i += 1) {
            for (j = cordX-width; j < cordX; j += 1) {
