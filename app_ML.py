@@ -37,12 +37,36 @@ socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True) #sp
 #omogocimo uporabo threada z knjizico
 thread = None
 thread_stop_event = Event()
-def api_call(pan_val_hex):
+def api_call_PT(pan_val_hex, tilt_val_hex):
+    # Request API for Pan and Tilt axis
+    # GET http://212.101.141.80/cgi-bin/aw_ptz
     try:
         response = requests.get(
             url="http://212.101.141.80/cgi-bin/aw_ptz",
             params={
-                "cmd": "#APC"+str(pan_val_hex)+"8000",
+                "cmd": "#APC"+str(pan_val_hex)+str(tilt_val_hex),
+                "res": "1",
+            },
+            headers={
+                "Cookie": "Session=0",
+            },
+        )
+        print('Response HTTP Status Code: {status_code}'.format(
+            status_code=response.status_code))
+        print('Response HTTP Response Body: {content}'.format(
+            content=response.content))
+    except requests.exceptions.RequestException:
+        print('HTTP Request failed')
+
+def api_call_Z(zoom_val_hex):
+    # Request APi for Zoom axis
+    # GET http://212.101.141.80/cgi-bin/aw_ptz
+    print(zoom_val_hex)
+    try:
+        response = requests.get(
+            url="http://212.101.141.80/cgi-bin/aw_ptz",
+            params={
+                "cmd": "#AXZ"+str(zoom_val_hex),
                 "res": "1",
             },
             headers={
@@ -133,17 +157,35 @@ def rtlsRun():
                             koordinate=[bb['value'], abs(320-bb['x'])*2, bb['y']*2-80, bb['width']*2, bb['height']*2]
                             cordX=koordinate[1]-koordinate[3]/2
                             cordY=koordinate[2]-koordinate[4]/2
-                            aY=300+(abs(cordY-35)*280/255)
-                            bX=abs(cordX-310)*175/210
-                            phi=np.arctan(bX/aY)
-                            #print("phi: ", phi)
-                            if koordinate[1] > 310:
-                                pan_val=32768+(phi*5500)
+                            if cordY>230:
+                                if cordX>310:
+                                    #the left board
+                                    pan_val=33712
+                                    tilt_val=32768
+                                    zoom_val=2672
+                                else:
+                                    #the right board
+                                    pan_val=31744
+                                    tilt_val=32768
+                                    zoom_val=2640
+                            elif cordX<220 and cordX>95 and cordY<150:
+                                # static values for professors desk
+                                pan_val=30720
+                                tilt_val=33700
+                                zoom_val=2400
                             else:
-                                pan_val=32768-(phi*5500)
-                            pan_val_hex=hex(int(pan_val))
-                            print("%X" % int(pan_val))
-                            api_call("%X" % int(pan_val))
+                                #otherwise try to track
+                                aY=300+(abs(cordY-35)*280/255)
+                                bX=abs(cordX-310)*175/210
+                                phi=np.arctan(bX/aY)
+                                tilt_val=32768
+                                zoom_val=2100
+                                if koordinate[1] > 310:
+                                    pan_val=32768+(phi*5500)
+                                else:
+                                    pan_val=32768-(phi*5500)
+                            api_call_PT("%X" % int(pan_val), "%X" % int(tilt_val))
+                            api_call_Z("%X" % int(zoom_val))
                             socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
                             break
 
@@ -193,4 +235,4 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5013)
+    socketio.run(app, host='0.0.0.0', port=5000)
