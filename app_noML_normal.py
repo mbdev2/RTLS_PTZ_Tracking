@@ -144,7 +144,7 @@ def rtlsRun():
         Xsr=310
         mejaTable=350
         mejaKatederY=190
-        mejaKatederXlevo=85
+        mejaKatederXlevo=90
         mejaKatederXdesno=230
 
         if avtonomijaONOFF and np.amax(img)>140:

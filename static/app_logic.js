@@ -28,22 +28,22 @@ $(document).ready(function(){
 
         var i;
         for (i = 0; i < imgData.data.length; i += 4) {
-           imgData.data[i+0] = 0;
-           imgData.data[i+1] = 0;
-           imgData.data[i+2] = 0;
+           imgData.data[i+0] = 89;
+           imgData.data[i+1] = 89;
+           imgData.data[i+2] = 89;
            imgData.data[i+3] = 255;
         }
         if (msg.koordinate[1]==-1 && msg.koordinate[2]==-1){
           cordX=-1
           cordY=-1
         }else{
-          //kateder
+          //barva
           var j;
           for (i = robYspredaj; i < 479; i += 1) {
            for (j = robXlevo; j < robXdesno; j += 1) {
              imgData.data[(i)*2*4*320+j*4] = 148;
              imgData.data[(i)*2*4*320+j*4+1] = 169;
-             imgData.data[(i)*2*4*320+j*4+2] = 138;
+             imgData.data[(i)*2*4*320+j*4+2] = 216;
              imgData.data[(i)*2*4*320+j*4+3] = 255;
            }
           }
