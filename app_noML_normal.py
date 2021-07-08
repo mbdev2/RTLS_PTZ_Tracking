@@ -155,7 +155,7 @@ def rtlsRun():
                     pan_val=31968
                     tilt_val=32816
                     zoom_val=2500
-            elif cordX<230 and cordX>85 and cordY<190:
+            elif cordX<230 and cordX>85 and cordY<170:
                 # static values for professors desk
                 pan_val=30720
                 tilt_val=33700
@@ -225,4 +225,4 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5001)
+    socketio.run(app, host='0.0.0.0', port=5002)
