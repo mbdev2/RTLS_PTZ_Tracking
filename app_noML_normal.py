@@ -127,7 +127,7 @@ def rtlsRun():
         #omejitve
         robYspredaj=45
         robXlevo=45
-        robXdesno=275
+        robXdesno=265
         robKatederX=205
         robKatederY=65
         for x in range(0,319):
