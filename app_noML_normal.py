@@ -169,8 +169,8 @@ def rtlsRun():
                 ZOOM=2300
             else:
                 #otherwise try to track
-                Aosebe=(abs(cordX-Xsr)*Apolja/2)/(420-90)
-                Bosebe=Bkamere+(abs(cordY-90)*Bpolja/(530-310))
+                Aosebe=(abs(cordX-Xsr)*Apolja/2)/(530-310)
+                Bosebe=Bkamere+(abs(cordY-90)*Bpolja/(420-90))
                 C=math.sqrt(int(Bosebe)^2+int(Aosebe)^2)
                 alpha=np.arctan(Aosebe/Bosebe)
                 TILT=32768+C*50/260
