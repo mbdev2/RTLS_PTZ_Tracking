@@ -89,7 +89,7 @@ $(document).ready(function(){
         }
 
         ctx.putImageData(imgData, 0, 0);
-        koordinate_string = '<h3>Koordinata X: </h3>'+'<p>' + cordX.toString() + '</p>' +'<h3>Koordinata Y: </h3>'+ '<p>' + cordY.toString() + '</p>';
+        koordinate_string = '<h3>Koordinata X:' + cordX.toString() + '</h3>'+ '<h3>Koordinata Y:' + cordY.toString() + '</h3>';
         $('#log').html(koordinate_string);
 
     });

@@ -60,6 +60,27 @@ def api_call_PT(pan_val_hex, tilt_val_hex):
             #content=response.content))
     except requests.exceptions.RequestException:
         print('HTTP Request failed')
+        
+def api_call_PT_fast(pan_val_hex, tilt_val_hex):
+    # Request API for Pan and Tilt axis
+    # GET http://212.101.141.80/cgi-bin/aw_ptz
+    try:
+        response = requests.get(
+            url="http://212.101.141.80/cgi-bin/aw_ptz",
+            params={
+                "cmd": "#APC"+str(pan_val_hex)+str(tilt_val_hex),
+                "res": "1",
+            },
+            headers={
+                "Cookie": "Session=0",
+            },
+        )
+        #print('Response HTTP Status Code: {status_code}'.format(
+            #status_code=response.status_code))
+        #print('Response HTTP Response Body: {content}'.format(
+            #content=response.content))
+    except requests.exceptions.RequestException:
+        print('HTTP Request failed')
 
 def api_call_Z(zoom_val_hex):
     # Request APi for Zoom axis
@@ -129,7 +150,7 @@ def rtlsRun():
         robXlevo=45
         robXdesno=265
         robKatederX=205
-        robKatederY=70
+        robKatederY=72
         for x in range(0,319):
             for y in range(0,239):
                 if y < robKatederY and x > robKatederX:
@@ -207,19 +228,19 @@ def nastaviPresetPTZ():
         PAN=32768
         TILT=32768
         ZOOM=1365
-    else if izbranPreset == 2:
+    elif izbranPreset == 2:
         PAN=33952
         TILT=32816
         ZOOM=2500
-    else if izbranPreset == 3:
+    elif izbranPreset == 3:
         PAN=31968
         TILT=32816
         ZOOM=2500
-    else if izbranPreset == 4:
+    elif izbranPreset == 4:
         PAN=30720
         TILT=33700
         ZOOM=2300
-    api_call_PT("%X" % int(PAN), "%X" % int(TILT))
+    api_call_PT_fast("%X" % int(PAN), "%X" % int(TILT))
     api_call_Z("%X" % int(ZOOM))
     return render_template('findmyprofessor.html', status=izbranPreset)
 
