@@ -32,6 +32,7 @@ avtonomijaONOFF = False #global variable to control stop/ start of autonomous tr
 INTERPOLATE = 10 #image interpolation factor
 MINTEMP =22.0 #low range of the sensor (this will be black on the screen)
 MAXTEMP = 38.0 #high range of the sensor (this will be white on the screen)
+DEBUG=True
 starX=0 #previous X coordinate (used to elimiante jitter i.e. motion within a certain amount of pixels)
 starY=0 #previous Y coordinate
 
@@ -110,6 +111,7 @@ def rtlsRun():
     global avtonomijaONOFF
     global starX
     global starY
+    global DEBUG
     #initialize the MLX90640 sensor
     i2c = busio.I2C(board.SCL, board.SDA) #MUST set I2C freq to 1MHz in /boot/config.txt
     mlx = adafruit_mlx90640.MLX90640(i2c) #initialize I2C connection with the camera
@@ -157,9 +159,13 @@ def rtlsRun():
         Bpolja=280 #Y-axis length in cm
         Apolja=340 #X-axis lenght in cm
         Xsr=310 #X-axis center
-        mejaTable=350 #Y-axis threshold for detecting as writing board
+        Xzl=530 #front left-cordner X-axis
+        Yzl=420 #front left-cordner Y-axis
+        Xsl=530 #back left-cordner X-axis
+        Ysl=90 #back left-cordner Y-axis
+        mejaTableY=350 #Y-axis threshold for detecting as writing board
         mejaKatederY=190 #Y-axis limit for our table
-        mejaKatederXlevo=90 #X-axis limit for our table
+        Xsd=90 #front right-cordner X-axis
         mejaKatederXdesno=230 #X-axis limit for our table
 
         #blackout certain parts of the image (borders + table with hot laptop)
@@ -175,7 +181,7 @@ def rtlsRun():
             #since our web interface is 640x480 we double the coordinates for accurate repesentation on the website
             cordX=int(320-result[1][0])*2 #we also invert the X-axis
             cordY=int(result[0][0])*2
-            if cordY>mejaTable: #check borders for writing boards
+            if cordY>mejaTableY: #check borders for writing boards
                 if cordX>Xsr:
                     #the left board
                     PAN=33952
@@ -186,15 +192,15 @@ def rtlsRun():
                     PAN=31968
                     TILT=32816
                     ZOOM=2500
-            elif cordX<mejaKatederXdesno and cordX>mejaKatederXlevo and cordY<mejaKatederY: #check borders for our desk table
+            elif cordX<mejaKatederXdesno and cordX>Xsd and cordY<mejaKatederY: #check borders for our desk table
                 # static values for professors desk
                 PAN=30720
                 TILT=33700
                 ZOOM=2300
             else:
                 #otherwise try to track - for formula explanations, check out my paper (same names for variables)
-                Aosebe=(abs(cordX-Xsr)*Apolja/2)/(530-310)
-                Bosebe=Bkamere+(abs(cordY-90)*Bpolja/(420-90))
+                Aosebe=(abs(cordX-Xsr)*Apolja/2)/(Xsl-Xsr)
+                Bosebe=Bkamere+(abs(cordY-90)*Bpolja/(Yzl-Ysl))
                 C=math.sqrt(int(Bosebe)^2+int(Aosebe)^2)
                 alpha=np.arctan(Aosebe/Bosebe)
                 TILT=32768+C*50/260
@@ -209,8 +215,9 @@ def rtlsRun():
                 api_call_PT("%X" % int(PAN), "%X" % int(TILT)) #call our function to set PAN and TILT
                 api_call_Z("%X" % int(ZOOM)) #call function to set ZOOM
                 #emit required variables for JS to render our scene
-                koordinate=[1.0, cordX, cordY, 10, 10, robYspredaj*2, robXlevo*2, robXdesno*2, robKatederX*2, robKatederY*2, Xsr, mejaTable, mejaKatederY, mejaKatederXdesno, mejaKatederXlevo]
-                socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
+                koordinate=[1.0, cordX, cordY, 10, 10, robYspredaj*2, robXlevo*2, robXdesno*2, robKatederX*2, robKatederY*2, Xsr, mejaTableY, mejaKatederY, mejaKatederXdesno, Xsd]
+                if DEBUG: #emit debug info only if desired
+                    socketio.emit('koordinate', {'koordinate': koordinate}, namespace='/rtls')
             starX=cordX
             starY=cordY
             sleep(0.01) #if left at 0, it crashes, prolly cause of thread schedulers
