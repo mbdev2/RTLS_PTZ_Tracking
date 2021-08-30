@@ -1,4 +1,4 @@
-# RTLS_PTZ_tracking - Real-Time Indoor Speaker Tracking System
+# RTLS PTZ Tracking - Real-Time Indoor Speaker Tracking System
 
 ## _Change your flow with thermal camera-based RTLS Speaker Tracking!_
 
