@@ -20,7 +20,7 @@ A diploma thesis based on the project is available here:
 
 ## Tech
 
-- Operates on a Raspberry Pi Model 4 B microcontroller and an MLX90640 thermal camera system (Adafruit recommended, but not required)
+- Operates on a Raspberry Pi Model 4 B microcomputer and an MLX90640 thermal camera system (Adafruit recommended, but not required)
 - Flask with SocketIO base
 - Panasonic PTZ API implementation
 - Adafruit CircuitPython and MLX90640 drivers
