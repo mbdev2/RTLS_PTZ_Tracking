@@ -1,3 +1,4 @@
+#App with local maximums
 #External libraries
 from flask import Flask, render_template, redirect, request
 import numpy
