@@ -28,7 +28,7 @@ A diploma thesis based on the project is available here:
 
 ## Installation
 
-- install Raspberry Pi OS (Raspbian) Buster or later on your RPi board (required: support for Python 3.6 or later)
+- Install Raspberry Pi OS (Raspbian) Buster or later on your RPi board (required: support for Python 3.6 or later)
 - Instal CircuitPython for Raspbian (available here: https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi)
 _ Install I2C drivers:
 a.	sudo pip3 install adafruit-circuitpython-mlx90640
