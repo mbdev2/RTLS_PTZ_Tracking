@@ -39,10 +39,10 @@ thread = None
 thread_stop_event = Event()
 def api_call_PT(pan_val_hex, tilt_val_hex):
     # Request API for Pan and Tilt axis
-    # GET http://212.101.141.80/cgi-bin/aw_ptz
+    # GET http://212.101.141.51/cgi-bin/aw_ptz
     try:
         response = requests.get(
-            url="http://212.101.141.80/cgi-bin/aw_ptz",
+            url="http://212.101.141.51/cgi-bin/aw_ptz",
             params={
                 "cmd": "#APC"+str(pan_val_hex)+str(tilt_val_hex),
                 "res": "1",
@@ -60,11 +60,11 @@ def api_call_PT(pan_val_hex, tilt_val_hex):
 
 def api_call_Z(zoom_val_hex):
     # Request APi for Zoom axis
-    # GET http://212.101.141.80/cgi-bin/aw_ptz
+    # GET http://212.101.141.51/cgi-bin/aw_ptz
     print(zoom_val_hex)
     try:
         response = requests.get(
-            url="http://212.101.141.80/cgi-bin/aw_ptz",
+            url="http://212.101.141.51/cgi-bin/aw_ptz",
             params={
                 "cmd": "#AXZ"+str(zoom_val_hex),
                 "res": "1",
